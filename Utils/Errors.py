@@ -37,3 +37,25 @@ class MissingPermissions(ErrorBase):
 			title="Missing Permissions",
 			description="You do not have permission to run this command"
 		)
+
+
+class MissingFile(ErrorBase):
+	def __init__(self, file_type):
+		self.message = Embed(
+			type="rich",
+			colour=Colour.from_rgb(255, 0, 0),
+			title="Missing File",
+			description=(
+				f"Expected {file_type} to be attached to the message"
+			)
+		)
+
+
+class NoXP(ErrorBase):
+	def __init__(self):
+		self.message = Embed(
+			type="rich",
+			colour=Colour.from_rgb(0, 0, 0),
+			title="No XP",
+			description="This user hasn't collected any XP yet"
+		)

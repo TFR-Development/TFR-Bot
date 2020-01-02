@@ -1,6 +1,7 @@
 from asyncio import sleep
 from os import listdir
 from importlib import import_module
+from discord import Game
 
 
 class RecurringEvent:
@@ -30,11 +31,19 @@ class ReadyEvent:
 				continue
 				
 			file.setup(self.add_event, client)
+		
 		self.client = client
 		client.event(self.on_ready)
 		
 	async def on_ready(self):
+		await self.client.change_presence(
+			activity=Game(
+				"Being developed!"
+			)
+		)
+		
 		current_interval = 0
+		
 		print(
 			f"{self.client.user} is online!"
 		)
@@ -52,6 +61,7 @@ class ReadyEvent:
 	def add_event(self, func, timeout):
 		if timeout > self.max_timeout:
 			self.max_timeout = timeout
+		
 		self.recurring_events.append(
 			RecurringEvent(
 				func,
@@ -60,8 +70,15 @@ class ReadyEvent:
 		)
 		
 	def events_to_run(self, interval):
+		if interval == 0:
+			return self.recurring_events
+			# Initially run all
+		
 		return list(filter(
-			lambda event: event.timeout % interval == 0,
+			lambda event: (
+				interval == event.timeout or
+				interval % event.timeout == 0
+			),
 			self.recurring_events
 		))
 		

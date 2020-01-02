@@ -4,7 +4,11 @@ class CommandHandler:
 		
 	def get_command(self, cmd):
 		for command in self.commands:
-			if cmd in [*command.aliases, command.name]:
+			command_names = [
+				*[c.lower() for c in command.aliases],
+				command.name.lower()
+			]
+			if cmd.lower() in command_names:
 				return command
 			
 	def add_command(self, command):

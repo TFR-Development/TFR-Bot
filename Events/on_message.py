@@ -1,3 +1,6 @@
+from random import randint
+
+
 class MessageEvent:
 
 	def __init__(self, client):
@@ -8,6 +11,18 @@ class MessageEvent:
 	async def on_message(self, message):
 		if message.author.bot:
 			return
+		
+		if not message.guild:
+			return
+		
+		if not self.client.DataBaseManager.in_xp_cooldown(
+				message.author.id, message.guild.id):
+				
+			self.client.DataBaseManager.add_xp(
+				guild=message.guild.id,
+				member=message.author.id,
+				amount=randint(1, 5)
+			)
 			
 		prefix = self.find_prefix(
 			[

@@ -1,5 +1,5 @@
 class Permissions:
-	def __init__(self, client, user, guild):
+	def __init__(self, client=None, user=None, guild=None):
 		self.client = client
 		self.user = user
 		self.guild = guild
@@ -61,10 +61,10 @@ class Permissions:
 			self.client.DataBaseManager.get_table("guilds")
 			.filter({
 				"guild": guild.id		
-			})
+			}).run(self.client.DataBaseManager.connection)
 		)
 		
-		if "partner_manager" in guild_conf.keys():
+		if "partner_manager" in guild_conf:
 			pm_roles = guild_conf["partner_manager"]
 			for role in pm_roles:
 				if role in user.roles:
@@ -80,9 +80,10 @@ class Permissions:
 			self.client.DataBaseManager.get_table("guilds").filter({
 				"guild": guild.id
 			})
+			.run(self.client.DataBaseManager.connection)
 		)
 		
-		if "helper" in guild_conf.keys():
+		if "helper" in guild_conf:
 			helper_roles = guild_conf["helper"]
 			for role in helper_roles:
 				if role in user.roles:
@@ -98,9 +99,10 @@ class Permissions:
 			self.client.DataBaseManager.get_table("guilds").filter({
 				"guild": guild.id
 			})
+			.run(self.client.DataBaseManager.connection)
 		)
 		
-		if "moderation" in guild_conf.keys():
+		if "moderation" in guild_conf:
 			mod_roles = guild_conf["moderation"]
 			for role in mod_roles:
 				if role in user.roles:
@@ -116,9 +118,10 @@ class Permissions:
 			self.client.DataBaseManager.get_table("guilds").filter({
 				"guild": guild.id
 			})
+			.run(self.client.DataBaseManager.connection)
 		)
 		
-		if "admin" in guild_conf.keys():
+		if "admin" in guild_conf:
 			admin_roles = guild_conf["admin"]
 			for role in admin_roles:
 				if role in user.roles:
@@ -137,9 +140,10 @@ class Permissions:
 			self.client.DataBaseManager.get_table("guilds").filter({
 				"guild": guild.id
 			})
+			.run(self.client.DataBaseManager.connection)
 		)
 		
-		if "owners" in guild_conf.keys():
+		if "owners" in guild_conf:
 			owners_roles = guild_conf["owners"]
 			for role in owners_roles:
 				if role in user.roles:
@@ -148,8 +152,14 @@ class Permissions:
 	
 	def level_9(self, user, _):
 		# bot admins
-		return user.id in self.client.config["bot admins"]
+		return user.id in self.client.config.bot_admins
 	
 	def level_10(self, user, _):
 		# bot owner
-		return user.id == int(self.client.config["owner id"])
+		return user.id == int(self.client.config.owner_id)
+	
+	def as_string(self, level):
+		for perm in self.perms:
+			if perm["level"] == level:
+				return perm["name"]
+		raise ValueError("Invalid Permission level provided")

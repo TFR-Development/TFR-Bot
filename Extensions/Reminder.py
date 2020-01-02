@@ -14,7 +14,7 @@ class AddReminder:
 		self.category = "Miscellaneous"
 		self.usage = "remindme <time> [message]"
 		
-	async def run(self, cmd, message, *args):
+	async def run(self, _, message, *args):
 		if len(args) == 0:
 			return await self.client.Errors.MissingArgs(
 				"time argument"
@@ -26,12 +26,13 @@ class AddReminder:
 		if not time:
 			return await self.client.Errors.MissingArgs(
 				"time argument"
-			)
+			).send(message.channel)
 
 		self.client.DataBaseManager.get_table("reminders").insert({
 			"user": str(message.author.id),
 			"expiry": (epoch() * 1000) + time,
-			"message": msg
+			"message": msg,
+			"type": "dm"
 		}).run(self.client.DataBaseManager.connection)
 		
 		await message.channel.send(

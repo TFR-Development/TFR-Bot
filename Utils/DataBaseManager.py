@@ -1,4 +1,5 @@
 from rethinkdb import RethinkDB
+from time import time as epoch
 
 
 class DataBaseManager:
@@ -24,6 +25,7 @@ class DataBaseManager:
 		return self.get_db().table(table)
 
 	def get_prefix(self, guild):
+		guild = str(guild)
 		guild_conf = list(
 			self.get_table("guilds").filter(
 				{
@@ -41,13 +43,128 @@ class DataBaseManager:
 		if not guild_conf:
 			self.get_table("guilds").insert({
 				"guild": guild,
-				"prefix": self.client.config["default prefix"]
+				"prefix": self.client.config.default_prefix
 			}).run(self.connection)
 			
 		else:
 			self.get_table("guilds").get(guild).update({
-				"prefix": self.client.config["default prefix"]
-			})
+				"prefix": self.client.config.default_prefix
+			}).run(self.connection)
 			
-		return self.client.config["default prefix"]
+		return self.client.config.default_prefix
 
+	def update_prefix(self, guild, new_prefix):
+		guild = str(guild)
+		(
+				self.get_table("guilds")
+				.filter(
+					{
+						"guild": guild
+					}
+				)
+				.update(
+					{
+						"prefix": new_prefix
+					}
+				)
+				.run(self.connection)
+		)
+		
+	def add_xp(self, guild, member, amount):
+		guild, member = str(guild), str(member)
+		table = self.get_table("xp")
+		
+		user_xp = list(
+			table.filter({
+				"guild": guild,
+				"user": member
+			}).run(self.connection)
+		)
+		
+		if user_xp:
+			user_xp = user_xp[0]
+			previous = user_xp["xp"]
+			self.get_table("xp").get(user_xp["id"]).update({
+				"xp": previous + amount,
+				"cooldown": (
+					epoch() + self.client.config.xp_cooldown
+				) * 1000
+			}).run(self.connection)
+			return previous + amount
+		
+		else:
+			table.insert({
+				"guild": guild,
+				"user": member,
+				"xp": amount,
+				"cooldown": (
+					epoch() + self.client.config.xp_cooldown
+				) * 1000
+			}).run(self.connection)
+			return amount
+
+	def xp_level(self, guild, member):
+		# Seems random for DataBaseManager but it interacts with
+		# the database
+
+		guild, member = str(guild), str(member)
+
+		level = 1
+		result = list(self.get_table("xp").filter({
+			"guild": guild,
+			"user": member
+		}).run(self.connection))
+		
+		if result:
+			result = result[0]
+		else:
+			return level
+		
+		xp = result["xp"]
+		
+		base_xp = 36
+		total_xp = 0
+		lvl = 1
+		while True:
+			required = (base_xp + base_xp / 4.0 * (lvl - 1))
+		
+			if required + total_xp > xp:
+				break
+		
+			total_xp += required
+			lvl += 1
+			
+		return lvl - 1
+	
+		# Logic adapted from Nadeko source levelling code for
+		# consistency
+		
+	def in_xp_cooldown(self, member, guild):
+		
+		member, guild = str(member), str(guild)
+		
+		result = list(
+				self.get_table("xp").filter({
+					"guild": guild,
+					"user": member
+				}).run(self.connection)
+			)
+		
+		if not result:
+			return False
+		
+		if "cooldown" not in result[0]:
+			return False
+		
+		return result[0]["cooldown"] >= epoch() * 1000
+
+	def get_xp(self, member, guild):
+		xp_db = list(self.get_table("xp").filter({
+			"guild": guild,
+			"member": member
+		}))
+		
+		return {
+			"xp": xp_db[0]["xp"] if xp_db else 0,
+			"level": self.xp_level(xp_db[0]["xp"] if xp_db else 0)
+		}

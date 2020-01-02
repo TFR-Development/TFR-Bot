@@ -4,7 +4,8 @@ attrs==19.3.0
 chardet==3.0.4
 discord.py==1.2.5
 idna==2.8
-multidict==4.6.1
+multidict==4.7.1
+Pillow==6.2.1
 rethinkdb==2.4.4.post1
 six==1.13.0
 websockets==6.0

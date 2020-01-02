@@ -26,12 +26,23 @@ class Help:
 			
 			usage = cmd.usage if hasattr(cmd, "usage") else cmd.name
 			
-			return await message.channel.send(embed=Embed(
+			permission_level = (
+				"Permission: " +
+				self.client.CalculatePermissions().as_string(
+					cmd.perm_level
+				) + f" ({cmd.perm_level})"
+			)
+			
+			embed = Embed(
 				type="rich",
 				colour=Colour.from_rgb(0, 0, 200),
 				title=f"{command.prefix}{usage}",
-				description=command.description
-			))
+				description=cmd.description,
+			)
+			
+			embed.set_footer(text=permission_level)
+
+			return await message.channel.send(embed=embed)
 		
 		categories = {}
 		

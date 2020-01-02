@@ -6,10 +6,12 @@ from Utils.CommandHandler import CommandHandler
 from Utils.DataBaseManager import DataBaseManager
 from Utils.TimeParser import TimeParser
 from Utils.Permissions import Permissions as CalculatePermissions
+from Utils.JSONReader import JSONReader
 import Utils.Errors as Errors
 
 with open("config.json") as config_file:
-	config = load(config_file)
+	config = JSONReader(load(config_file))
+	
 
 client = Client(
 	status="online",
@@ -52,4 +54,4 @@ for extension in listdir("Extensions"):
 		
 	cmd.setup(client)
 
-client.run(config["token"])
+client.run(config.token)
