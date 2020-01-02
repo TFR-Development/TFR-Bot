@@ -1,5 +1,5 @@
 # **RetreatBot**
-A Discord bot for The Fur Retreat.
+A Discord bot for [The Fur Retreat.](https://discord.furretreat.rocks)
 
 # Setup
 
