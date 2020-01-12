@@ -3,6 +3,8 @@
 	"default prefix": "tfr!",
 	"owner id": 0,
 	"bot admins": [
-
-	]
+        1,
+	],
+	"font_file": "",
+	"xp_cooldown": 60
 }
