@@ -57,8 +57,11 @@ class MessageEvent:
 			return await self.client.Errors.MissingPermissions().send(
 				message.channel
 			)
-		
-		await command.run(command, message, *args)
+		if getattr(command, "typing", False):
+			async with message.channel.typing():
+				await command.run(command, message, *args)
+		else:
+			await command.run(command, message, *args)
 		
 	@staticmethod
 	def find_prefix(prefixes, msg):

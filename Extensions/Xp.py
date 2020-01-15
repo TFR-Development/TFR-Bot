@@ -46,6 +46,8 @@ class Xp:
 			r"(<@!?)?(\d{17,19})(>)?"
 		)
 		
+		self.typing = True
+		
 	async def run(self, _, message, *args):
 		xp = self.xp.copy()
 		
@@ -78,7 +80,7 @@ class Xp:
 			member = User(user)
 		
 		user_tag = member.tag
-
+		
 		ctx = list(self.client.DataBaseManager.get_table("xp").filter(
 			{
 				"guild": str(message.guild.id)
@@ -110,6 +112,11 @@ class Xp:
 			40
 		)
 		
+		rank_font = ImageFont.truetype(
+			self.client.config.font_file,
+			30
+		)
+		
 		draw.text(
 			(140, 80,),
 			user_tag,
@@ -118,7 +125,7 @@ class Xp:
 		)
 		
 		draw.text(
-			(100, 220,),
+			(120, 220,),
 			"Lvl " + str(self.client.DataBaseManager.xp_level(
 				message.guild.id,
 				member.get("id")
@@ -131,7 +138,7 @@ class Xp:
 			(286, 220,),
 			f"{rank_lb} / {len(ctx)}",
 			(0, 0, 0),
-			font=score_font
+			font=rank_font
 		)
 		
 		draw.text(
