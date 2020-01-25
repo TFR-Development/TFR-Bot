@@ -18,7 +18,7 @@ class Serverinfo:
 		await message.channel.send(
 			embed=(
 				Embed(
-					title="Serverinfo",
+					title="Server Info",
 					type="rich",
 					description="Emojis: " + self.max_emojis(
 						message.guild.emojis, 2000
@@ -35,6 +35,14 @@ class Serverinfo:
 				).add_field(
 					name="Nitro Boosters",
 					value=str(message.guild.premium_subscription_count),
+					inline=True
+				).add_field(
+					name="Owner",
+					value="<@" + str(message.guild.owner_id) + ">",
+					inline=True
+				).add_field(
+					name="Region",
+					value=message.guild.region,
 					inline=True
 				).add_field(
 					name="Channels",
