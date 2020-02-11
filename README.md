@@ -9,6 +9,14 @@
 
 ## A Discord bot for [The Fur Retreat.](https://discord.furretreat.rocks)
 
+### Prerequisites
+
+* Python 3
+* RethinkDB
+* TFR-API
+
+For some commands, the bot requires the [TFR-API](https://github.com/TFR-Development/TFR-API). Please check the README.md for install instructions.
+
 ### Setup
 
 #### Virtual Environment
@@ -28,5 +36,3 @@ The bot should be online now.
 [This official guide](https://rethinkdb.com/docs/install/) will link to the RethinkDB site, giving instructions and downloadable files for different operating systems.
 
 Once you've downloaded the server and ran it, make sure to create the database named `tfr`.
-
-##### Make sure to download Python 3.8.1 from [here](https://www.python.org/downloads/).
