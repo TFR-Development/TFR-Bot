@@ -1,5 +1,6 @@
 # TFR Bot
 
+[![Python application](https://github.com/TFR-Development/TFR-Bot/workflows/Python%20application/badge.svg)](https://github.com/TFR-Development/TFR-Bot/actions)
 [![GitHub](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/TFR-Development/TFR-Bot)
 [![Language Badge](https://img.shields.io/github/languages/top/TFR-Development/TFR-Bot.svg)](https://github.com/TFR-Development/TFR-Bot)
 
