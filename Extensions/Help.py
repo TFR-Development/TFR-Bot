@@ -17,7 +17,7 @@ class Help:
 	async def run(self, command, message, *args):
 		if args:
 			cmd = self.client.CommandHandler.get_command(args[0])
-			
+
 			if not cmd:
 				return await self.client.Errors.InvalidArgs(
 					args[0],
@@ -33,11 +33,19 @@ class Help:
 				) + f" ({cmd.perm_level})"
 			)
 			
+			aliases = ", ".join(
+				[f"`{alias}`" for alias in getattr(cmd, "aliases", [])]
+			) or "None"
+			
+			plural = len(getattr(cmd, "aliases", [])) != 1
+			
 			embed = Embed(
 				type="rich",
 				colour=Colour.from_rgb(0, 0, 200),
 				title=f"{command.prefix}{usage}",
-				description=cmd.description,
+				description=
+				f"**Description**: {cmd.description}\n**Alia"
+				f"s{'es' if plural else ''}**: {aliases}",
 			)
 			
 			embed.set_footer(text=permission_level)
@@ -56,10 +64,10 @@ class Help:
 				categories[cmd.category.lower()].append(cmd)
 			else:
 				categories[cmd.category.lower()] = [cmd]
-		
+
 		help_embed = Embed(
 			type="rich",
-			colour=Colour.from_rgb(0, 0, 200),
+			colour=Colour.from_rgb(106, 106, 106),
 			title=f"{self.client.user.name} help"
 		)
 		
@@ -72,7 +80,7 @@ class Help:
 		categories = sorted_categories
 		for cat in categories:
 			help_embed.add_field(
-				name=cat.title(),
+				name=cat.upper(),
 				value="\n".join([
 					"**{0}{1}**\n{2}\n".format(
 						command.prefix,

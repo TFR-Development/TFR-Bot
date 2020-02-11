@@ -67,7 +67,7 @@ class Permissions:
 		if "partner_manager" in guild_conf:
 			pm_roles = guild_conf["partner_manager"]
 			for role in pm_roles:
-				if role in user.roles:
+				if self.has_role(user.roles, role.id):
 					return True
 		return False
 	
@@ -86,7 +86,7 @@ class Permissions:
 		if "helper" in guild_conf:
 			helper_roles = guild_conf["helper"]
 			for role in helper_roles:
-				if role in user.roles:
+				if self.has_role(user.roles, role.id):
 					return True
 		return False
 	
@@ -102,10 +102,10 @@ class Permissions:
 			.run(self.client.DataBaseManager.connection)
 		)
 		
-		if "moderation" in guild_conf:
-			mod_roles = guild_conf["moderation"]
+		if "moderator" in guild_conf:
+			mod_roles = guild_conf["moderator"]
 			for role in mod_roles:
-				if role in user.roles:
+				if self.has_role(user.roles, role.id):
 					return True
 		return False
 	
@@ -121,10 +121,10 @@ class Permissions:
 			.run(self.client.DataBaseManager.connection)
 		)
 		
-		if "admin" in guild_conf:
-			admin_roles = guild_conf["admin"]
+		if "administrator" in guild_conf:
+			admin_roles = guild_conf["administrator"]
 			for role in admin_roles:
-				if role in user.roles:
+				if self.has_role(user.roles, role.id):
 					return True
 		return False
 	
@@ -143,10 +143,10 @@ class Permissions:
 			.run(self.client.DataBaseManager.connection)
 		)
 		
-		if "owners" in guild_conf:
-			owners_roles = guild_conf["owners"]
+		if "owner" in guild_conf:
+			owners_roles = guild_conf["owner"]
 			for role in owners_roles:
-				if role in user.roles:
+				if self.has_role(user.roles, role.id):
 					return True
 		return False
 	
@@ -163,3 +163,11 @@ class Permissions:
 			if perm["level"] == level:
 				return perm["name"]
 		raise ValueError("Invalid Permission level provided")
+	
+	@staticmethod
+	def has_role(roles, rid):
+		rid = str(rid)
+		for r in roles:
+			if r.id == rid:
+				return True
+		return False

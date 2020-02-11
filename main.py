@@ -7,6 +7,7 @@ from Utils.DataBaseManager import DataBaseManager
 from Utils.TimeParser import TimeParser
 from Utils.Permissions import Permissions as CalculatePermissions
 from Utils.JSONReader import JSONReader
+from Utils.APIBridge import APIBridge
 import Utils.Errors as Errors
 
 with open("config.json") as config_file:
@@ -26,7 +27,7 @@ client.DataBaseManager = DataBaseManager(client)
 client.Errors = Errors
 client.TimeParser = TimeParser
 client.CalculatePermissions = CalculatePermissions
-
+client.API = APIBridge(client)
 
 for file in listdir("Events"):
 
