@@ -182,7 +182,7 @@ class SendQOTD:
 	@staticmethod
 	def get_response_channel(guild):
 		for c in guild.channels:
-			if c.name == "staff-testing":
+			if c.name == "qotd":
 				return c
 		
 	@staticmethod
