@@ -144,10 +144,13 @@ class DataBaseManager:
 		member, guild = str(member), str(guild)
 		
 		result = list(
-				self.get_table("xp").filter({
-					"guild": guild,
-					"user": member
-				}).run(self.connection)
+				self.get_table("xp").filter(
+					{
+						"guild": guild,
+						"user": member
+					}
+				)
+				.run(self.connection)
 			)
 		
 		if not result:
@@ -159,12 +162,157 @@ class DataBaseManager:
 		return result[0]["cooldown"] >= epoch() * 1000
 
 	def get_xp(self, member, guild):
-		xp_db = list(self.get_table("xp").filter({
-			"guild": guild,
-			"member": member
-		}))
+		xp_db = list(
+			self.get_table("xp").filter(
+				{
+					"guild": guild,
+					"member": member
+				}
+			)
+		)
 		
 		return {
 			"xp": xp_db[0]["xp"] if xp_db else 0,
 			"level": self.xp_level(xp_db[0]["xp"] if xp_db else 0)
 		}
+	
+	def add_qotd(self, question, thought, fact, guild, author):
+		guild = str(guild)
+		author = str(author)
+		
+		(
+			self.get_table("qotd")
+			.insert(
+				{
+					"question": question,
+					"thought": thought,
+					"fact": fact,
+					"guild": guild,
+					"author": author
+				}
+			).run(self.connection)
+		)
+		
+	def get_qotd(self, guild):
+		guild = str(guild)
+
+		return list(
+			self.get_table("qotd")
+			.filter(
+				{
+					"guild": guild
+				}
+			)
+			.run(self.connection)
+		)
+	
+	def remove_qotd(self, qotd_id):
+		(
+			self.get_table("qotd")
+			.get(qotd_id)
+			.delete()
+			.run(self.connection)
+		)
+		
+	def get_qotd_channel(self, guild):
+		guild = str(guild)
+		config = list(
+			self.get_table("guilds")
+			.filter(
+				{
+					"guild": guild
+				}
+			)
+			.run(self.connection)
+		)
+		
+		if len(config) == 0:
+			return None
+			# Not really sure how this could happen,
+			# A config entry should be created on the message event
+			# before a command is ran if no prefix entry exists
+		
+		config = config[0]
+
+		if "qotd_channel" in config.keys():
+			return config["qotd_channel"]
+
+		return None
+
+	def set_qotd_channel(self, guild, channel):
+		(
+			self.get_table("guilds")
+			.filter(
+				{
+					"guild": str(guild)
+				}
+			)
+			.update(
+				{
+					"qotd_channel": str(channel)
+				}
+			)
+			.run(self.connection)
+		)
+
+	def set_qotd_role(self, guild, role):
+		(
+			self.get_table("guilds")
+			.filter(
+				{
+					"guild": str(guild)
+				}
+			)
+			.update(
+				{
+					"qotd_role": str(role)
+				}
+			)
+			.run(self.connection)
+		)
+	
+	def get_qotd_role(self, guild):
+		guild = str(guild)
+		config = list(
+			self.get_table("guilds")
+			.filter(
+				{
+					"guild": guild
+				}
+			)
+			.run(self.connection)
+		)
+		
+		if len(config) == 0:
+			return None
+		# Not really sure how this could happen,
+		# A config entry should be created on the message event
+		# before a command is ran if no prefix entry exists
+		
+		config = config[0]
+		
+		if "qotd_role" in config.keys():
+			return config["qotd_role"]
+		
+		return None
+
+	def get_all_qotd(self, guild):
+		guild = str(guild)
+		return list(
+			self.get_table("qotd")
+			.filter(
+				{
+					"guild": guild
+				}
+			)
+			.run(self.connection)
+		)
+	
+	def qotd_exists(self, qotd, guild):
+		res = (
+			self.get_table("qotd")
+			.get(qotd)
+			.run(self.connection)
+		)
+		
+		return res and res["guild"] == str(guild)

@@ -14,7 +14,6 @@ class ReadyEvent:
 	def __init__(self, client):
 		self.recurring_events = []
 		self.max_timeout = 1
-		
 		for event in listdir("Recurring Events"):
 			if not event.endswith(".py"):
 				continue
@@ -36,6 +35,7 @@ class ReadyEvent:
 		client.event(self.on_ready)
 		
 	async def on_ready(self):
+		
 		await self.client.change_presence(
 			activity=Game(
 				"Being developed!"
@@ -47,7 +47,7 @@ class ReadyEvent:
 		print(
 			f"{self.client.user} is online!"
 		)
-		
+
 		while True:
 			await sleep(1)
 			

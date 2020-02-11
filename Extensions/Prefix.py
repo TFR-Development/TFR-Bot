@@ -1,6 +1,3 @@
-from discord import Embed
-
-
 class Prefix:
 	def __init__(self, client):
 		self.client = client
