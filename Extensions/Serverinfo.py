@@ -46,11 +46,19 @@ class Serverinfo:
 					inline=True
 				).add_field(
 					name="Channels",
-					value=str(len(message.guild.channels)),
+					value=len(message.guild.channels),
+					inline=True
+				).add_field(
+					name="Roles",
+					value=len(message.guild.roles),
 					inline=True
 				).add_field(
 					name="Members",
 					value=str(message.guild.member_count),
+					inline=True
+				).add_field(
+					name="Online",
+					value=reduce(self.online, message.guild.members),
 					inline=True
 				).add_field(
 					name="Premium Features",
@@ -60,10 +68,6 @@ class Serverinfo:
 							for f in message.guild.features
 						]
 					) or "None",
-					inline=True
-				).add_field(
-					name="Online",
-					value=reduce(self.online, message.guild.members),
 					inline=True
 				).set_thumbnail(
 					url=self.gen_icon(
