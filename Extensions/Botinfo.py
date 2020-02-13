@@ -51,7 +51,10 @@ class Botinfo:
                     value="[Bot](https://github.com/TFR-Development/TFR-Bot)\n[API](https://github.com/TFR-Development/TFR-API)",
                     inline=True
                 ).set_thumbnail(
-                    url=self.client.user.avatar_url,
+                    url=self.gen_icon(
+                        self.client.user.id,
+                        self.client.user.avatar
+                    )
                 )
             )
         )
@@ -62,6 +65,10 @@ class Botinfo:
         for admin_id in admin_list:
             admins += "<@{}>\n".format(admin_id)
         return admins
+
+    @staticmethod
+    def gen_icon(user_id, icon):
+        return f"https://cdn.discordapp.com/avatars/{user_id}/{icon}.png?size=1024"
 
 
 def setup(client):
