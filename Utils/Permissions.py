@@ -3,7 +3,6 @@ class Permissions:
 		self.client = client
 		self.user = user
 		self.guild = guild
-		
 		self.perms = [
 			{
 				"name": "Everyone",
@@ -57,17 +56,17 @@ class Permissions:
 		if not hasattr(user, "roles"):
 			return False
 		
-		guild_conf = (
+		guild_conf = list(
 			self.client.DataBaseManager.get_table("guilds")
 			.filter({
-				"guild": guild.id		
+				"guild": str(guild.id)		
 			}).run(self.client.DataBaseManager.connection)
-		)
+		)[0]
 		
 		if "partner_manager" in guild_conf:
 			pm_roles = guild_conf["partner_manager"]
 			for role in pm_roles:
-				if self.has_role(user.roles, role.id):
+				if self.has_role(user.roles, role):
 					return True
 		return False
 	
@@ -76,17 +75,17 @@ class Permissions:
 		if not hasattr(user, "roles"):
 			return False
 		
-		guild_conf = (
+		guild_conf = list(
 			self.client.DataBaseManager.get_table("guilds").filter({
-				"guild": guild.id
+				"guild": str(guild.id)
 			})
 			.run(self.client.DataBaseManager.connection)
-		)
+		)[0]
 		
 		if "helper" in guild_conf:
 			helper_roles = guild_conf["helper"]
 			for role in helper_roles:
-				if self.has_role(user.roles, role.id):
+				if self.has_role(user.roles, role):
 					return True
 		return False
 	
@@ -95,17 +94,17 @@ class Permissions:
 		if not hasattr(user, "roles"):
 			return False
 		
-		guild_conf = (
+		guild_conf = list(
 			self.client.DataBaseManager.get_table("guilds").filter({
-				"guild": guild.id
+				"guild": str(guild.id)
 			})
 			.run(self.client.DataBaseManager.connection)
-		)
+		)[0]
 		
 		if "moderator" in guild_conf:
 			mod_roles = guild_conf["moderator"]
 			for role in mod_roles:
-				if self.has_role(user.roles, role.id):
+				if self.has_role(user.roles, role):
 					return True
 		return False
 	
@@ -114,17 +113,17 @@ class Permissions:
 		if not hasattr(user, "roles"):
 			return False
 		
-		guild_conf = (
+		guild_conf = list(
 			self.client.DataBaseManager.get_table("guilds").filter({
-				"guild": guild.id
+				"guild": str(guild.id)
 			})
 			.run(self.client.DataBaseManager.connection)
-		)
+		)[0]
 		
 		if "administrator" in guild_conf:
 			admin_roles = guild_conf["administrator"]
 			for role in admin_roles:
-				if self.has_role(user.roles, role.id):
+				if self.has_role(user.roles, role):
 					return True
 		return False
 	
@@ -136,17 +135,17 @@ class Permissions:
 		if user.id == guild.owner.id:
 			return True
 		
-		guild_conf = (
+		guild_conf = list(
 			self.client.DataBaseManager.get_table("guilds").filter({
-				"guild": guild.id
+				"guild": str(guild.id)
 			})
 			.run(self.client.DataBaseManager.connection)
-		)
+		)[0]
 		
 		if "owner" in guild_conf:
 			owners_roles = guild_conf["owner"]
 			for role in owners_roles:
-				if self.has_role(user.roles, role.id):
+				if self.has_role(user.roles, role):
 					return True
 		return False
 	
@@ -168,6 +167,6 @@ class Permissions:
 	def has_role(roles, rid):
 		rid = str(rid)
 		for r in roles:
-			if r.id == rid:
+			if str(r.id) == rid:
 				return True
 		return False
