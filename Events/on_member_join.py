@@ -15,11 +15,22 @@ class MemberJoin:
 		if not join_logs:
 			return
 		
-		await join_logs.send(embed=Embed(
-			type="rich",
-			title=f"Avatar for {member.name}#{member.discriminator}",
-			colour=Colour.from_rgb(238, 144, 101)
-		).set_image(url=member.avatar_url))
+		await join_logs.send(
+			embed=Embed(
+				type="rich",
+				title=f"Avatar for {member}",
+				colour=Colour.from_rgb(238, 144, 101),
+				description=
+				f"[Avatar]({member.avatar_url})\n"
+				"[Reverse Image Search]("
+				"https://images.google.com/searchbyimage?"
+				"image_url=" +
+				str(member.avatar_url).replace(':', '%3A').replace(
+					'/', '%2F') + ")"
+				).set_image(
+					url=member.avatar_url
+				)
+		)
 
 
 def setup(client):
