@@ -7,6 +7,6 @@ idna==2.8
 multidict==4.7.4
 Pillow==6.2.1
 rethinkdb==2.4.4.post1
-six==1.13.0
+six==1.14.0
 websockets==8.1
 yarl==1.4.2
