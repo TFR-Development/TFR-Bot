@@ -1,7 +1,6 @@
 from asyncio import sleep
 from os import listdir
 from importlib import import_module
-from discord import Game
 
 
 class RecurringEvent:
@@ -35,13 +34,6 @@ class ReadyEvent:
 		client.event(self.on_ready)
 		
 	async def on_ready(self):
-		
-		await self.client.change_presence(
-			activity=Game(
-				"Being developed!"
-			)
-		)
-		
 		current_interval = 0
 		
 		print(
