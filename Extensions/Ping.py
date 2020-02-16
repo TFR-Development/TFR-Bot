@@ -11,7 +11,7 @@ class Ping:
 		
 	async def run(self, cmd, message, *args):
 		await message.channel.send(
-			f"""Pong!:ping_pong:\nLatency {round(
+			f"""Pong! :ping_pong:\nLatency {round(
 				self.client.latency * 1000,
 				3)
 			}ms"""
