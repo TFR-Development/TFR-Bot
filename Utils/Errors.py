@@ -124,3 +124,13 @@ class UnchangedOutput(ErrorBase):
 			title="No Conversion Necessary",
 			description=f"`{from_type}` and `{to_type}` are the same"
 		)
+
+
+class PlaceNotFound(ErrorBase):
+	def __init__(self, place_name):
+		self.message = Embed(
+			type="rich",
+			colour=Colour.from_rgb(255, 70, 73),
+			title="Place Not Found",
+			description=f"There is no place found with the name `{place_name}`"
+		)
