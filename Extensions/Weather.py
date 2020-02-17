@@ -18,11 +18,9 @@ class TempConvert:
     def k_to_c(k):
         return int(int(k) - 273)
 
-    @staticmethod
     def f_to_k(self, f):
         return self.c_to_k(self.f_to_c(int(f)))
 
-    @staticmethod
     def k_to_f(self, k):
         return self.c_to_f(self.k_to_c(int(k)))
 
