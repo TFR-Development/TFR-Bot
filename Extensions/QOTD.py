@@ -74,12 +74,12 @@ class QOTDAdd:
 		await message.channel.send(
 			embed=Embed(
 				type="rich",
-				title="QOTD Success!",
+				title="QOTD Added Successfully",
 				description=(
 					f"Preview:\n\n"
 					f"{format_qotd(question, thought, fact)}"
 				),
-				colour=Colour.from_rgb(180, 111, 255)
+				colour=Colour.from_rgb(111, 255, 141)
 			),
 			delete_after=40.0
 		)
@@ -169,9 +169,22 @@ class SendQOTD:
 			await r.edit(
 				mentionable=mentionable
 			)
-			
+
+		await message.channel.send(
+			embed=Embed(
+				type="rich",
+				title="QOTD Sent Successfully",
+				description="Channel: <#{}>".format(str(channel)),
+				colour=Colour.from_rgb(111, 255, 141)
+			).set_footer(
+				text=str(user),
+				icon_url=str(user.avatar_url)
+			),
+			delete_after=40.0
+		)
+
 		self.client.DataBaseManager.remove_qotd(qotd["id"])
-		
+
 		response_channel = self.get_response_channel(message.guild)
 		
 		if not response_channel:
