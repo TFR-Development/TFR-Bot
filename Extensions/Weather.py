@@ -70,7 +70,7 @@ class TempConvert:
         self.category = "Utilities"
         self.perm_level = 0
         self.description = "Converts between Fahrenheit, Celsius, and Kelvin."
-        self.usage = "tempconvert [temperature] [from_type] [to_type]"
+        self.usage = "tempconvert <temperature> <from_type> <to_type>"
 
     async def run(self, _, message, *args):
         if len(args) == 0:
@@ -238,7 +238,7 @@ class Weather:
         self.category = "Utilities"
         self.perm_level = 0
         self.description = "Gets some weather."
-        self.usage = "weather [place_name]"
+        self.usage = "weather <place_name>"
         self.geo = Nominatim(user_agent="TFR-Bot")
         self.key = self.client.config.openweathermap_key
 
