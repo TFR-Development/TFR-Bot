@@ -38,12 +38,12 @@ class TempConvert:
         self.category = "Utilities"
         self.perm_level = 0
         self.description = "Converts between Fahrenheit, Celsius, and Kelvin."
-        self.usage = "tconvert [temperature] [from_type] [to_type]"
+        self.usage = "tempconvert [temperature] [from_type] [to_type]"
 
     async def run(self, _, message, *args):
         if len(args) == 0:
             return await self.client.Errors.MissingArgs(
-                "temp"
+                "temperature"
             ).send(message.channel)
 
         args = self.client.API.request(
