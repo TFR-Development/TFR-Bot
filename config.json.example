@@ -6,5 +6,6 @@
         1,
 	],
 	"font_file": "./Assets/Fonts/Roboto-Regular.ttf",
-	"xp_cooldown": 60
+	"xp_cooldown": 60,
+	"openweathermap_key": ""
 }

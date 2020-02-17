@@ -43,6 +43,8 @@
 
 For some commands, the bot requires the [TFR-API](https://github.com/TFR-Development/TFR-API). Please check the README.md for install instructions.
 
+**Note: an OpenWeatherMap API key is required to use the weather command. You can get one [here](https://openweathermap.org/api) for free.**
+
 ### Setup
 
 #### Virtual Environment
