@@ -15,7 +15,7 @@ class MissingArgs(ErrorBase):
 			type="rich",
 			colour=Colour.from_rgb(255, 70, 73),
 			title="Missing Arguments",
-			description=f"Missing {arg_name} from your command!"
+			description=f"Missing `{arg_name.replace('`', '')}` from your command!"
 		)
 		
 		
@@ -24,9 +24,9 @@ class InvalidArgs(ErrorBase):
 		self.message = Embed(
 			type="rich",
 			colour=Colour.from_rgb(255, 70, 73),
-			title="Invalid arguments",
+			title="Invalid Arguments",
 			description=
-			f"`{arg.replace('`', '')}` isn't a valid {proper_type}"
+			f"`{arg.replace('`', '')}` isn't a valid `{proper_type.replace('`', '')}`"
 		)
 
 
@@ -113,4 +113,14 @@ class InvalidQOTDChannel(ErrorBase):
 			colour=Colour.from_rgb(255, 70, 73),
 			title="Invalid QOTD Channel",
 			description="The QOTD channel which was set is now invalid"
+		)
+
+
+class UnchangedOutput(ErrorBase):
+	def __init__(self, from_type, to_type):
+		self.message = Embed(
+			type="rich",
+			colour=Colour.from_rgb(255, 70, 73),
+			title="No Conversion Necessary",
+			description=f"`{from_type}` and `{to_type}` are the same"
 		)
