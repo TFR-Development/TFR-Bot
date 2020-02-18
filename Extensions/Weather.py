@@ -157,11 +157,11 @@ class TempConvert:
                 colour=Colour.from_rgb(111, 255, 141)
             ).add_field(
                 name="Input",
-                value="{:,} {} {}".format(m, "degree" if (m == 1 or m == -1) else "degrees", f),
+                value="{:,}{}{}".format(m, "" if (f == "Kelvin") else "°", f[:1]),
                 inline=True
             ).add_field(
                 name="Output",
-                value="{:,} {} {}".format(out_val, "degree" if (out_val == 1 or out_val == -1) else "degrees", t),
+                value="{:,}{}{}".format(out_val, "" if (t == "Kelvin") else "°", t[:1]),
                 inline=True
             )
         )
