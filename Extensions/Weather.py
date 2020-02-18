@@ -309,11 +309,11 @@ class Forecast:
         condition = ", ".join(condition_list)
 
         # Format the description
-        desc = "{}°F ({}°C),\n\n{},\n\nHigh of {}°F ({}°C) - Low of {}°F ({}°C)\n\n".format(
-            tf, tc,
+        desc = "{}°C ({}°F),\n\n{},\n\nHigh of {}°C ({}°F) - Low of {}°C ({}°F)\n\n".format(
+            tc, tf,
             condition,
-            maxf, maxc,
-            minf, minc
+            maxc, maxf,
+            minc, minf
         )
 
         return desc
