@@ -154,7 +154,7 @@ class TempConvert:
             embed=Embed(
                 title="Converted!",
                 type="rich",
-                colour=Colour.from_rgb(111, 255, 141)
+                colour=Colour.from_rgb(234, 111, 255)
             ).add_field(
                 name="Input",
                 value="{:,}{}{}".format(m, "" if (f == "Kelvin") else "°", f[:1]),
@@ -206,7 +206,7 @@ class Weather:
         embed = Embed(
             title="Weather for {}, {} {}".format(place, country, flag),
             type="rich",
-            colour=Colour.from_rgb(111, 255, 141)
+            colour=Colour.from_rgb(234, 111, 255)
         ).add_field(
             name="Current Temperature",
             value="{}°C ({}°F)".format(tc, tf),
@@ -404,7 +404,7 @@ class Forecast:
         embed = Embed(
             type="rich",
             title=title,
-            color=Colour.from_rgb(111, 255, 141)
+            color=Colour.from_rgb(234, 111, 255)
         ).set_footer(
             text="Powered by OpenWeatherMap"
         )
