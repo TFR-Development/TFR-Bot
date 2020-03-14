@@ -10,6 +10,7 @@ from Utils.JSONReader import JSONReader
 from Utils.APIBridge import APIBridge
 from Utils.DL import DL
 from Utils.ArgsParser import ArgsParser
+from Utils.AutoMod import AutoModHandler
 import Utils.Errors as Errors
 
 with open("config.json") as config_file:
@@ -32,6 +33,7 @@ client.CalculatePermissions = CalculatePermissions
 client.API = APIBridge(client)
 client.DL = DL(client)
 client.ArgsParser = ArgsParser(client)
+client.AutoMod = AutoModHandler(client)
 
 for file in listdir("Events"):
 

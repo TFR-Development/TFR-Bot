@@ -13,8 +13,8 @@ class Help:
 		self.perm_level = 0
 		self.description = "Shows a command list"
 		self.category = "Miscellaneous"
-		self.usage = "help [command]"
 		
+		self.usage = "help [command]"
 		self.accepted_reactions = {
 			"◀": {
 				"check": lambda page, _: page != 0

@@ -15,7 +15,8 @@ class MissingArgs(ErrorBase):
 			type="rich",
 			colour=Colour.from_rgb(255, 70, 73),
 			title="Missing Arguments",
-			description=f"Missing `{arg_name.replace('`', '')}` from your command!"
+			description=
+			f"Missing `{arg_name.replace('`', '')}` from your command!"
 		)
 		
 		
@@ -26,7 +27,8 @@ class InvalidArgs(ErrorBase):
 			colour=Colour.from_rgb(255, 70, 73),
 			title="Invalid Arguments",
 			description=
-			f"`{arg.replace('`', '')}` isn't a valid `{proper_type.replace('`', '')}`"
+			f"`{arg.replace('`', '')}` isn't a valid "
+			f"`{proper_type.replace('`', '')}`"
 		)
 
 
@@ -132,5 +134,16 @@ class PlaceNotFound(ErrorBase):
 			type="rich",
 			colour=Colour.from_rgb(255, 70, 73),
 			title="Place Not Found",
-			description=f"There is no place found with the name `{place_name}`"
+			description=
+			f"There is no place found with the name `{place_name}`"
+		)
+
+
+class InvalidRegEx(ErrorBase):
+	def __init__(self, err):
+		self.message = Embed(
+			type="rich",
+			colour=Colour.from_rgb(255, 70, 73),
+			title="Invalid Regular Expression!",
+			description=f"```py\n{err}```"
 		)
