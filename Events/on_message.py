@@ -15,6 +15,9 @@ class MessageEvent:
 		if not message.guild:
 			return
 		
+		if await self.client.AutoMod.auto_mod_filter(message):
+			return
+			
 		if not self.client.DataBaseManager.in_xp_cooldown(
 				message.author.id, message.guild.id):
 				

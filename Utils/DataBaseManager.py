@@ -173,7 +173,9 @@ class DataBaseManager:
 		
 		return {
 			"xp": xp_db[0]["xp"] if xp_db else 0,
-			"level": self.xp_level(xp_db[0]["xp"] if xp_db else 0)
+			"level": self.xp_level(
+				xp_db[0]["xp"] if xp_db else 0, member
+			)
 		}
 	
 	def add_qotd(self, question, thought, fact, guild, author):
@@ -316,3 +318,71 @@ class DataBaseManager:
 		)
 		
 		return res and res["guild"] == str(guild)
+	
+	def get_filters(self, guild, channel=None):
+		
+		match = {
+			"guild": str(guild),
+			"type": "text"
+		}
+		
+		if channel:
+			match["channel"] = str(channel)
+		
+		return list(
+			self.get_table("filters")
+			.filter(
+				match
+			)
+			.run(
+				self.connection
+			)
+		)
+	
+	def insert_punishment(self, **options):
+		print(options)
+		self.get_table("punishments").insert(
+			options
+		).run(self.connection)
+		
+	def get_img_filters(self, guild):
+		return list(
+			self.get_table("filters").filter(
+				{
+					"guild": str(guild),
+					"type": "image"
+				}
+			).run(
+				self.connection
+			)
+		)
+
+	def add_text_filter(self, punish, regex, channel, reason, guild):
+		(
+			self.get_table("filters")
+			.insert(
+				{
+					"guild": str(guild),
+					"action": punish,
+					"filter": regex,
+					"channel": str(channel),
+					"reason": reason,
+					"type": "text"
+				}
+			).run(self.connection)
+		)
+
+	def filter_exists(self, guild, f_id, f_type):
+		return len(
+			list(
+				self.get_table("filters")
+				.filter(
+					{
+						"guild": str(guild),
+						"id": f_id,
+						"type": f_type
+					}
+				)
+				.run(self.connection)
+			)
+		) != 0
