@@ -28,8 +28,8 @@ class MemberJoin:
 		if not join_logs:
 			return
 		
-		# Send a message to the join logs channel with the users avatar (enlarged)
-		# The link to the users avatar
+		# Send a message to the join logs channel with the users
+		# (enlarged). The link to the users avatar
 		# And a link to a reverse image search result
 		await join_logs.send(
 			embed=Embed(
@@ -43,10 +43,10 @@ class MemberJoin:
 					"image_url=" +
 					str(member.avatar_url).replace(':', '%3A').replace(
 						'/', '%2F'
-					) + ")",
+					) + ")"
 				)
 			).set_image(
-				url=member.avatar_url
+				url=str(member.avatar_url)
 			)
 		)
 
