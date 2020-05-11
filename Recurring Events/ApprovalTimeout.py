@@ -30,10 +30,12 @@ class ApprovalTimeout:
 
         now = datetime.now()
         
-        unverified_members = list(filter(
-            lambda member: (now - member.joined_at) >= self.day,
-            unverified_members
-        ))
+        unverified_members = list(
+            filter(
+                lambda member: (now - member.joined_at) >= self.day,
+                unverified_members
+            )
+        )
         
         for m in unverified_members:
             # @everyone, @Unverified

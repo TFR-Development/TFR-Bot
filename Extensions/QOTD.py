@@ -30,17 +30,22 @@ class QOTDAdd:
 				"question"
 			).send(message.channel)
 		
-		args = self.client.API.request(
+		# Make a request to the API to parse quote wrapped args
+		res = self.client.API.request(
 			route="argparser",
 			Message=" ".join(args)
-		).get("Message", [])
+		)
 		
-		if args == -1:
+		if res == -1:
+			# -1 indicates error connecting to API
 			return await self.client.Errors.NoAPIConnection().send(
 				message.channel
 			)
 		
+		args = res.get("Message", [])
+		
 		if len(args) < 1:
+			# No question arg provided
 			return await self.client.Errors.MissingArgs(
 				"question"
 			).send(
@@ -48,6 +53,7 @@ class QOTDAdd:
 			)
 		
 		if len(args) < 2:
+			# No thought arg provided
 			return await self.client.Errors.MissingArgs(
 				"thought"
 			).send(
@@ -55,6 +61,7 @@ class QOTDAdd:
 			)
 		
 		if len(args) < 3:
+			# No fact arg provided
 			return await self.client.Errors.MissingArgs(
 				"fact"
 			).send(
@@ -62,13 +69,17 @@ class QOTDAdd:
 			)
 		
 		question, thought, fact, *_ = args
+		
+		# Unpack args into question, thought and fact, any extra args
+		# being ignored
 
+		# Insert into the db
 		self.client.DataBaseManager.add_qotd(
 			question,
 			thought,
 			fact,
-			message.guild.id,
-			message.author.id
+			str(message.guild.id),
+			str(message.author.id)
 		)
 
 		await message.channel.send(
@@ -101,33 +112,41 @@ class SendQOTD:
 		self.usage = "sendqotd"
 		
 	async def run(self, _, message, *__):
+		# Retrieve all QOTD in the db for this guild
 		all_qotd = self.client.DataBaseManager.get_qotd(
-			message.guild.id
+			str(message.guild.id)
 		)
 		
 		if len(all_qotd) == 0:
+			# This server didn't have any stored
 			return await self.client.Errors.NoQOTD().send(
 				message.channel
 			)
 		
+		# Pick a (pseudo)random one
 		qotd = choice(all_qotd)
 		
+		# Fetch the output channel from the db
 		channel = self.client.DataBaseManager.get_qotd_channel(
-			message.guild.id
+			str(message.guild.id)
 		)
 		
 		if not channel:
+			# No channel found
 			return await self.client.Errors.NoQOTDChannel().send(
 				message.channel
 			)
 		
+		# Resolve ID to a channel
 		guild_channel = message.guild.get_channel(int(channel))
 		
 		if not guild_channel:
+			# No channel found with that ID
 			return await self.client.Errors.InvalidQOTDChannel().send(
 				message.channel
 			)
 		
+		# Attempt to fetch the role to mention from the db
 		role_mention = self.client.DataBaseManager.get_qotd_role(
 			message.guild.id
 		)
@@ -135,9 +154,15 @@ class SendQOTD:
 		msg_text, r, mentionable = None, None, None
 		
 		if role_mention:
+			# There was an entry in the db for which role to mention
+			
 			r = message.guild.get_role(int(role_mention))
+			# Attempt to resolve that entry to a role
 			
 			if r:
+				# The role was found
+				
+				# Store whether the role was mentionable before editing
 				mentionable = r.mentionable
 				
 				await r.edit(
@@ -145,6 +170,7 @@ class SendQOTD:
 				)
 				msg_text = f"<@&{r.id}>"
 		
+		# Attempt to fetch QOTD author using their ID
 		user = await self.client.fetch_user(int(qotd["author"]))
 		
 		await guild_channel.send(
@@ -166,10 +192,12 @@ class SendQOTD:
 		)
 		
 		if msg_text:
+			# Restore the role to its previous mentionable state
 			await r.edit(
 				mentionable=mentionable
 			)
 
+		# Send success receipt to the message channel
 		await message.channel.send(
 			embed=Embed(
 				type="rich",
@@ -183,37 +211,44 @@ class SendQOTD:
 			delete_after=40.0
 		)
 
+		# Now it has been sent, delete it from the db
 		self.client.DataBaseManager.remove_qotd(qotd["id"])
 
+		# Get a channel to send the date to
 		response_channel = self.get_response_channel(message.guild)
 		
 		if not response_channel:
+			# Channel not found
 			return
 		
 		await response_channel.send(f"```{self.format_date()}```")
 		
 	@staticmethod
 	def get_response_channel(guild):
+		# Returns a channel called qotd-response if it exists
 		for c in guild.channels:
 			if c.name == "qotd-response":
 				return c
 		
 	@staticmethod
 	def format_date():
+		# Returns the current date as a formatted string
 		date = datetime.now()
 		
 		start = date.strftime("%A, %B ")
 		
 		day = date.strftime("%d")
+		# Zero padded two digit date
 		
 		year = date.strftime(" %Y")
 		
 		exceptions = {
-			"1": "st",
-			"2": "nd",
-			"3": "rd",
+			"01": "st",
+			"02": "nd",
+			"03": "rd",
 			"21": "st",
 			"22": "nd",
+			"23": "rd",
 			"31": "st"
 		}
 		
@@ -241,34 +276,43 @@ class SetQOTDChannel:
 		
 	async def run(self, _, message, *args):
 		if len(args) == 0:
+			# No args provided
 			return await self.client.Errors.MissingArgs("channel").send(
 				message.channel
 			)
 		
 		channel_resolvable = "-".join(args)
 		
+		# Search for channel using the channel resolvable
 		channel = self.get_channel(message.guild, channel_resolvable)
 	
 		if not channel:
+			# Channel not found
 			return await self.client.Errors.InvalidArgs(
 				channel_resolvable,
 				"channel"
 			).send(message.channel)
 		
+		# Update in db
 		self.client.DataBaseManager.set_qotd_channel(
-			message.guild.id,
-			channel.id
+			str(message.guild.id),
+			str(channel.id)
 		)
 		
-		await message.channel.send(embed=Embed(
-			type="rich",
-			colour=Colour.from_rgb(111, 255, 235),
-			title="Channel Updated!",
-			description=f"QOTD will now be sent to <#{channel.id}>"
-		))
+		# Send success receipt
+		await message.channel.send(
+			embed=Embed(
+				type="rich",
+				colour=Colour.from_rgb(111, 255, 235),
+				title="Channel Updated!",
+				description=f"QOTD will now be sent to <#{channel.id}>"
+			)
+		)
 		
 	@staticmethod
 	def strip_channel(channel):
+		# Return a channel id from a channel mention
+		
 		channel = channel.strip()
 		if channel.startswith("<#"):
 			channel = channel[2:]
@@ -278,6 +322,9 @@ class SetQOTDChannel:
 		return channel
 
 	def get_channel(self, guild, channel_resolvable):
+		# Attempts to resolve channel_resolvable to one of {guild}s
+		# channels
+		
 		channel_id = self.strip_channel(channel_resolvable)
 		
 		for channel in guild.channels:
@@ -306,33 +353,40 @@ class SetQOTDRole:
 		
 	async def run(self, _, message, *args):
 		if len(args) == 0:
+			# No args provided
 			return await self.client.Errors.MissingArgs("role").send(
 				message.channel
 			)
 			
 		role_resolvable = " ".join(args)
 		
+		# Attempt to resolve role_resolvable
 		role = self.get_role(message.guild, role_resolvable)
 		
 		if not role:
+			# No role found
 			return await self.client.Errors.InvalidArgs(
 				role_resolvable, "role"
 			)
 		
+		# Update db entry
 		self.client.DataBaseManager.set_qotd_role(
-			message.guild.id,
-			role.id
+			str(message.guild.id),
+			str(role.id)
 		)
 		
-		await message.channel.send(embed=Embed(
-			type="rich",
-			colour=Colour.from_rgb(111, 255, 235),
-			title="Role Updated!",
-			description=(
-				f"<@&{role.id}> will now be mentioned when a "
-				f"QOTD is sent"
+		# Send success receipt
+		await message.channel.send(
+			embed=Embed(
+				type="rich",
+				colour=Colour.from_rgb(111, 255, 235),
+				title="Role Updated!",
+				description=(
+					f"<@&{role.id}> will now be mentioned when a "
+					f"QOTD is sent"
+				)
 			)
-		))
+		)
 		
 	@staticmethod
 	def get_role(guild, role_resolvable):
@@ -358,12 +412,14 @@ class QOTDList:
 		self.perm_level = 2
 		self.description = "Lists all QOTD currently stored"
 		self.usage = "qotdlist"
+		
+		# All the reactions that are needed for the menu
 		self.accepted_reactions = {
 			"➡": {
 				"check": lambda page, length: page < length - 1
 			},
 			"⬅": {
-				"check": lambda page, _: page != 0
+				"check": lambda page, _: page > 0
 			},
 			"❌": {
 				"check": lambda *_: True
@@ -371,11 +427,13 @@ class QOTDList:
 		}
 
 	async def run(self, _, message, *__):
+		# Retrieve all the QOTD for this guild
 		all_qotd = self.client.DataBaseManager.get_all_qotd(
-			message.guild.id
+			str(message.guild.id)
 		)
 		
 		if len(all_qotd) == 0:
+			# This guild doesn't have any QOTD in storage
 			return await self.client.Errors.NoQOTD().send(
 				message.channel
 			)
@@ -383,17 +441,22 @@ class QOTDList:
 		formatted_qotd = []
 		
 		user_cache = {}
+		# Builds a cache of users, limiting the amount of requests
+		# made to discord API, minimising ratelimits
 		
 		for qotd in all_qotd:
 			qotd_iter_user = int(qotd["author"])
 			if qotd_iter_user not in user_cache.keys():
+				# User not in the local cache (dict)
 				fetched = await self.client.fetch_user(qotd_iter_user)
 				
+				# Update dict with new user
 				user_cache[qotd_iter_user] = {
 					"avatar": str(fetched.avatar_url),
 					"tag": str(fetched)
 				}
-			
+				
+			# Insert QOTD into menu pages
 			formatted_qotd.append(
 				{
 					"msg": format_qotd(
@@ -408,16 +471,22 @@ class QOTDList:
 				}
 			)
 			
-		msg = await message.channel.send(embed=Embed(
-			type="rich",
-			colour=Colour.from_rgb(111, 255, 235),
-			title="QOTD",
-			description="Loading"
-		))
+		# Message to hold the menu
+		msg = await message.channel.send(
+			embed=Embed(
+				type="rich",
+				colour=Colour.from_rgb(111, 255, 235),
+				title="QOTD",
+				description="Loading"
+			)
+		)
 		
+		# Set page and length variables accordingly, used to navigate
+		# the menu
 		page = 0
 		total_len = len(all_qotd)
 		
+		# Start the menu at page 0
 		await msg.edit(
 			embed=Embed(
 				type="rich",
@@ -436,13 +505,19 @@ class QOTDList:
 		)
 		
 		while True:
+			# Start menu loop
 			try:
 				for r in self.accepted_reactions.keys():
+					# Check reactions on message
+					
+					# A lambda function indicating whether or not the
+					# reaction should currently exist (bool)
 					keep = self.accepted_reactions[r]["check"](
 						page,
 						total_len
 					)
 
+					# Find reaction object from message.reactions
 					reacted = self.get(
 						msg.reactions,
 						r,
@@ -450,49 +525,69 @@ class QOTDList:
 					)
 					
 					if keep and reacted and reacted.me:
+						# The reaction should exist and the bot has
+						# reacted
 						continue
+					
 					if keep:
+						# The reaction should exist and bot hasn't
+						# reacted
 						await msg.add_reaction(r)
 						continue
 						
 					if (not keep) and reacted and reacted.me:
+						# The reaction shouldn't exist but the bot
+						# has reacted
 						await msg.remove_reaction(r, message.guild.me)
 				
+				# Update message from cache
 				msg = self.get(
 					self.client.cached_messages,
 					msg.id,
 					lambda m: m.id
 				)
 				
+				# Wait for next reaction_add event on this message
 				reaction, user = await self.client.wait_for(
 					"reaction_add",
 					timeout=300,
 					check=lambda react_check, u: (
+						# The bot has the same reaction and the user is
+						# correct and the menu message is being
+						# reacted to
 						react_check.me and u.id == message.author.id
 						and react_check.message.id == msg.id
 					)
 				)
 				
-				await reaction.remove(user)
-				
 				if not reaction:
+					# Somehow reaction is None
 					return await msg.delete()
 				
-				if reaction and reaction.emoji == "❌":
+				# Remove the users reaction
+				await reaction.remove(user)
+				
+				if reaction.emoji == "❌":
+					# User reacted with X, end menu
 					return await msg.delete()
 				
 				if reaction.emoji == "➡":
+					# Increment page by 1
 					page += 1
 					
 				else:
+					# Decrement page by 1
 					page -= 1
 					
 				if page < 0:
+					# Page is somehow a negative value, default back
+					# to 0
 					page = 0
 				
 				if page == len(formatted_qotd):
 					page = len(formatted_qotd) - 1
 				
+				# Update the menu with the (new) current page
 				await msg.edit(
 					embed=Embed(
 						type="rich",
@@ -511,10 +606,12 @@ class QOTDList:
 				)
 			
 			except AsyncioTimeout:
+				# Timeout waiting for reaction, delete menu
 				return await msg.delete()
 	
 	@staticmethod
 	def get(reactions, key, func=lambda n: n):
+		# Utility function to search for key in reactions
 		for i in reactions:
 			if func(i) == key:
 				return i
@@ -538,28 +635,36 @@ class RemoveQOTD:
 		
 	async def run(self, _, message, *args):
 		if len(args) == 0:
+			# No args were provided
 			return await self.client.Errors.MissingArgs("QOTD ID").send(
 				message.channel
 			)
 
+		# Check a QOTD of the given ID both exists and was made by
+		# the current guild
 		valid = self.client.DataBaseManager.qotd_exists(
 			args[0],
 			message.guild.id
 		)
 
 		if not valid:
+			# Either doesn't exist or doesn't belong to this guild
 			return await self.client.Errors.InvalidArgs("QOTD ID").send(
 				message.channel
 			)
 		
+		# Remove this QOTD
 		self.client.DataBaseManager.remove_qotd(args[0])
 		
-		await message.channel.send(embed=Embed(
-			type="rich",
-			colour=Colour.from_rgb(180, 111, 255),
-			title="Success!",
-			description="QOTD deleted successfully"
-		))
+		# Send a success receipt to the current channel
+		await message.channel.send(
+			embed=Embed(
+				type="rich",
+				colour=Colour.from_rgb(180, 111, 255),
+				title="Success!",
+				description="QOTD deleted successfully"
+			)
+		)
 		
 
 def setup(client):

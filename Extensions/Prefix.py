@@ -13,6 +13,7 @@ class Prefix:
 	
 	async def run(self, _, message, *args):
 		if len(args) == 0:
+			# No args provided, send messing args error
 			return await self.client.Errors.MissingArgs("prefix").send(
 				message.channel
 			)

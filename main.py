@@ -11,6 +11,7 @@ from Utils.APIBridge import APIBridge
 from Utils.DL import DL
 from Utils.ArgsParser import ArgsParser
 from Utils.AutoMod import AutoModHandler
+from Utils.WebhookUtils import WebhookManager
 import Utils.Errors as Errors
 
 with open("config.json") as config_file:
@@ -34,31 +35,56 @@ client.API = APIBridge(client)
 client.DL = DL(client)
 client.ArgsParser = ArgsParser(client)
 client.AutoMod = AutoModHandler(client)
+client.WebhookManager = WebhookManager(client)
+client.failed_events = []
+client.failed_commands = []
+
+import_errors = (
+	NameError,
+	SyntaxError,
+	IndentationError,
+	ImportError
+)
 
 for file in listdir("Events"):
+	# Load all event files
 
 	if not file.endswith(".py"):
+		# Not a python file, ignore
 		continue
 	
-	module = import_module(f"Events.{file.split('.')[0]}")
+	try:
+		module = import_module(f"Events.{file.split('.')[0]}")
+	except import_errors as e:
+		client.failed_events.append((file, e,))
 	
 	if not hasattr(module, "setup"):
+		# The file doesn't have a setup function, warn and continue
 		print(f"Unable to load {file}, missing setup function")
+		client.failed_events.append((file, "Missing setup function",))
 		continue
 		
 	module.setup(client)
 	
 for extension in listdir("Extensions"):
-	
-	if not extension.endswith(".py"):
-		continue
+	# Load all command files
 
-	cmd = import_module(f"Extensions.{extension.split('.')[0]}")
+	if not extension.endswith(".py"):
+		# Not a python file
+		continue
+	
+	try:
+		cmd = import_module(f"Extensions.{extension.split('.')[0]}")
+	except import_errors as e:
+		client.failed_commands.append((extension, e,))
 	
 	if not hasattr(cmd, "setup"):
+		# File has no setup function, warn and continue
 		print(f"Unable to load {extension}, missing setup function")
+		client.failed_commands.append((extension, "Missing setup",))
 		continue
 		
 	cmd.setup(client)
 
+# Run the bot
 client.run(config.token)
