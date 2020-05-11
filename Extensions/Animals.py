@@ -71,12 +71,17 @@ class Dog:
 			"https://dog.ceo/api/breeds/image/random",
 			"message",
 			"https://images.dog.ceo/breeds/" + choice(self.fallback)
+		)  # Fetches a random dog image url
+		
+		await message.channel.send(
+			embed=Embed(
+				title="Dog! 🐶",
+				type="rich",
+				colour=Colour.from_rgb(180, 111, 255)
+			).set_image(
+				url=url
+			)
 		)
-		await message.channel.send(embed=Embed(
-			title="Dog! 🐶",
-			type="rich",
-			colour=Colour.from_rgb(180, 111, 255)
-		).set_image(url=url))
 
 		
 class Fox:
@@ -92,15 +97,19 @@ class Fox:
 		
 	@staticmethod
 	async def run(_, message, *__):
-		await message.channel.send(embed=Embed(
-			title="Fox! 🦊",
-			type="rich",
-			colour=Colour.from_rgb(180, 111, 255)
-		).set_image(url=await fetch_url(
-			"https://randomfox.ca/floof/",
-			"image",
-			"http://randomfox.ca/images/14.jpg"
-		)))
+		await message.channel.send(
+			embed=Embed(
+				title="Fox! 🦊",
+				type="rich",
+				colour=Colour.from_rgb(180, 111, 255)
+			).set_image(
+				url=await fetch_url(
+					"https://randomfox.ca/floof/",
+					"image",
+					"http://randomfox.ca/images/14.jpg"
+				)
+			)
+		)
 
 
 class Panda:
@@ -119,15 +128,19 @@ class Panda:
 	
 	@staticmethod
 	async def run(_, message, *__):
-		await message.channel.send(embed=Embed(
-			title="Panda! 🐼",
-			type="rich",
-			colour=Colour.from_rgb(180, 111, 255)
-		).set_image(url=await fetch_url(
-			"https://some-random-api.ml/img/panda",
-			"link",
-			"https://i.imgur.com/nxwRXLj.jpg"
-		)))
+		await message.channel.send(
+			embed=Embed(
+				title="Panda! 🐼",
+				type="rich",
+				colour=Colour.from_rgb(180, 111, 255)
+			).set_image(
+				url=await fetch_url(
+					"https://some-random-api.ml/img/panda",
+					"link",
+					"https://i.imgur.com/nxwRXLj.jpg"
+				)
+			)
+		)
 
 
 class Bird:
@@ -167,18 +180,20 @@ class Bird:
 		self.usage = "bird"
 
 	async def run(self, _, message, *__):
-		await message.channel.send(embed=Embed(
-			title="Bird! 🐦",
-			type="rich",
-			colour=Colour.from_rgb(180, 111, 255)
-		).set_image(
-			url=
-			"https://random.birb.pw/img/" + await fetch_url(
-				"http://random.birb.pw/tweet.json/",
-				"file",
-				choice(self.fallback)
+		await message.channel.send(
+			embed=Embed(
+				title="Bird! 🐦",
+				type="rich",
+				colour=Colour.from_rgb(180, 111, 255)
+			).set_image(
+				url=
+				"https://random.birb.pw/img/" + await fetch_url(
+					"http://random.birb.pw/tweet.json/",
+					"file",
+					choice(self.fallback)
+				)
 			)
-		))
+		)
 
 
 def setup(client):

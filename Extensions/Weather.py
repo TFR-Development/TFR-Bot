@@ -5,32 +5,51 @@ import datetime
 
 
 def get_output(w_text):
-    if "tornado" in w_text.lower():
+    # Adds the appropriate weather emoji to w_text
+    
+    w_low = w_text.lower()
+    
+    if "tornado" in w_low:
         return "🌪️ " + w_text
-    if any(x in w_text.lower() for x in ["hurricane", "tropical"]):
+    
+    if any(x in w_low for x in ["hurricane", "tropical"]):
         return "🌀 " + w_text
-    if any(x in w_text.lower() for x in ["snow", "flurries", "hail"]):
+    
+    if any(x in w_low for x in ["snow", "flurries", "hail"]):
         return "🌨️ " + w_text
-    if "thunder" in w_text.lower():
+    
+    if "thunder" in w_low:
         return "⛈️ " + w_text
-    if any(x in w_text.lower() for x in ["rain", "drizzle", "showers", "sleet"]):
+    
+    if any(x in w_low for x in ["rain", "drizzle", "showers", "sleet"]):
         return "🌧️ " + w_text
-    if "cold" in w_text.lower():
+    
+    if "cold" in w_low:
         return "❄️ " + w_text
-    if any(x in w_text.lower() for x in ["windy", "blustery", "breezy"]):
+    
+    if any(x in w_low for x in ["windy", "blustery", "breezy"]):
         return "🌬️ " + w_text
-    if "mostly cloudy" in w_text.lower():
+    
+    if "mostly cloudy" in w_low:
         return "⛅ " + w_text
-    if any(x in w_text.lower() for x in ["partly cloudy", "scattered clouds", "few clouds", "broken clouds"]):
+    
+    if any(x in w_low for x in ["partly cloudy", "scattered clouds",
+                                "few clouds", "broken clouds"]):
         return "🌤️ " + w_text
-    if any(x in w_text.lower() for x in ["cloudy", "clouds"]):
+    
+    if any(x in w_low for x in ["cloudy", "clouds"]):
         return "☁️ " + w_text
-    if "fair" in w_text.lower():
+    
+    if "fair" in w_low:
         return "🌄 " + w_text
-    if any(x in w_text.lower() for x in ["hot", "sunny", "clear"]):
+    
+    if any(x in w_low for x in ["hot", "sunny", "clear"]):
         return "☀️ " + w_text
-    if any(x in w_text.lower() for x in ["dust", "foggy", "haze", "smoky"]):
+    
+    if any(x in w_low for x in ["dust", "foggy", "haze", "smoky"]):
         return "️🌫️ " + w_text
+    
+    # No emoji for that text, return text
     return w_text
 
 
@@ -70,7 +89,8 @@ class TempConvert:
 
         self.category = "Utilities"
         self.perm_level = 0
-        self.description = "Converts between Fahrenheit, Celsius, and Kelvin."
+        self.description = "Converts between Fahrenheit, Celsius and " \
+                           "Kelvin."
         self.usage = "tempconvert <temperature> <from_type> <to_type>"
 
     async def run(self, _, message, *args):
@@ -112,8 +132,23 @@ class TempConvert:
                 "temperature"
             ).send(message.channel)
 
-        f = next((x for x in types if x.lower() == args[1].lower() or x.lower()[:1] == args[1][:1].lower()), None)
-        t = next((x for x in types if x.lower() == args[2].lower() or x.lower()[:1] == args[2][:1].lower()), None)
+        args_1_l = args[1].lower()
+        
+        args_2_l = args[2].lower()
+
+        f = next(
+            (
+                x for x in types
+                if x.lower() == args_1_l or x.lower()[0] == args_1_l[0]
+            ), None
+        )
+        
+        t = next(
+            (
+                x for x in types
+                if x.lower() == args_2_l or x.lower()[0] == args_2_l
+            ), None
+        )
 
         if not f:
             # Invalid from type
@@ -157,11 +192,19 @@ class TempConvert:
                 colour=Colour.from_rgb(234, 111, 255)
             ).add_field(
                 name="Input",
-                value="{:,}{}{}".format(m, "" if (f == "Kelvin") else "°", f[:1]),
+                value="{:,}{}{}".format(
+                    m,
+                    "" if (f == "Kelvin") else "°",
+                    f[0]
+                ),
                 inline=True
             ).add_field(
                 name="Output",
-                value="{:,}{}{}".format(out_val, "" if (t == "Kelvin") else "°", t[:1]),
+                value="{:,}{}{}".format(
+                    out_val,
+                    "" if (t == "Kelvin") else "°",
+                    t[0]
+                ),
                 inline=True
             )
         )
@@ -169,7 +212,12 @@ class TempConvert:
 
 class Weather:
     @staticmethod
-    def get_weather_embed(r={}):
+    def get_weather_embed(r=None):
+        
+        if not r:
+            # Non mutable default parameters
+            r = {}
+            
         # Returns a string representing the weather passed
         main = r["main"]
         weather = r["weather"]
@@ -179,21 +227,17 @@ class Weather:
         # Make sure we get the temps in both F and C
         tc = k_to_c(main["temp"])
         tf = c_to_f(tc)
-        minc = k_to_c(main["temp_min"])
-        minf = c_to_f(minc)
-        maxc = k_to_c(main["temp_max"])
-        maxf = c_to_f(maxc)
+        min_c = k_to_c(main["temp_min"])
+        min_f = c_to_f(min_c)
+        max_c = k_to_c(main["temp_max"])
+        max_f = c_to_f(max_c)
         lat = coord["lat"]
         lon = coord["lon"]
-        try:
-            place = r["name"]
-            country = sys["country"]
-            flag = ":flag_{}:".format(str(country).lower())
-        except KeyError:
-            place = lat
-            country = lon
-            flag = ""
-
+        
+        place = r.get("name", lat)
+        country = sys.get("country", lon)
+        flag = f":flag_{country.lower()}:" if country else ""
+        
         # Gather the formatted conditions
         condition_list = []
         for x, y in enumerate(weather):
@@ -203,7 +247,7 @@ class Weather:
             condition_list.append(get_output(d))
         condition = ", ".join(condition_list)
 
-        embed = Embed(
+        return Embed(
             title="Weather for {}, {} {}".format(place, country, flag),
             type="rich",
             colour=Colour.from_rgb(234, 111, 255)
@@ -217,17 +261,16 @@ class Weather:
             inline=True
         ).add_field(
             name="Daily High",
-            value="High of {}°C ({}°F)".format(maxc, maxf),
+            value="High of {}°C ({}°F)".format(max_c, max_f),
         ).add_field(
             name="Daily Low",
-            value="Low of {}°C ({}°F)".format(minc, minf),
+            value="Low of {}°C ({}°F)".format(min_c, min_f),
             inline=True
         ).set_footer(
-            text="Lat: {} | Lon: {} | Powered by OpenWeatherMap".format(lat, lon) if (
-                        place != lat or country != lon) else "Powered by OpenWeatherMap"
+            text=f"Lat: {lat} | Lon: {lon} | Powered by OpenWeatherMap"
+            if (place != lat or country != lon) else "Powered by"
+                                                     " OpenWeatherMap"
         )
-
-        return embed
 
     def __init__(self, client):
         self.client = client
@@ -272,11 +315,14 @@ class Weather:
 
         # Just want the current weather
         r = await self.client.DL.async_json(
-            "http://api.openweathermap.org/data/2.5/weather?appid={}&lat={}&lon={}".format(
+            "http://api.openweathermap.org/data/2.5/weather?"
+            "appid={}&lat={}&lon={}".format(
                 self.key,
                 location.latitude,
                 location.longitude
-            ))
+            )
+        )
+        
         embed = self.get_weather_embed(r)
 
         await message.channel.send(
@@ -286,7 +332,7 @@ class Weather:
 
 class Forecast:
     @staticmethod
-    def get_weather_text(r={}):
+    def get_weather_text(r):
         # Returns a string representing the weather passed
         main = r["main"]
         weath = r["weather"]
@@ -294,10 +340,10 @@ class Forecast:
         # Make sure we get the temps in both F and C
         tc = k_to_c(main["temp"])
         tf = c_to_f(tc)
-        minc = k_to_c(main["temp_min"])
-        minf = c_to_f(minc)
-        maxc = k_to_c(main["temp_max"])
-        maxf = c_to_f(maxc)
+        min_c = k_to_c(main["temp_min"])
+        min_f = c_to_f(min_c)
+        max_c = k_to_c(main["temp_max"])
+        max_f = c_to_f(max_c)
 
         # Gather the formatted conditions
         condition_list = []
@@ -309,12 +355,13 @@ class Forecast:
         condition = ", ".join(condition_list)
 
         # Format the description
-        desc = "{}°C ({}°F),\n\n{},\n\nHigh of {}°C ({}°F) - Low of {}°C ({}°F)\n\n".format(
-            tc, tf,
-            condition,
-            maxc, maxf,
-            minc, minf
-        )
+        desc = "{}°C ({}°F),\n\n{},\n\nHigh of {}°C ({}°F) - Low of" \
+               " {}°C ({}°F)\n\n".format(
+                    tc, tf,
+                    condition,
+                    max_c, max_f,
+                    min_c, min_f
+                )
 
         return desc
 
@@ -361,11 +408,13 @@ class Forecast:
 
         # We want the 5-day forecast at this point
         r = await self.client.DL.async_json(
-            "http://api.openweathermap.org/data/2.5/forecast?appid={}&lat={}&lon={}".format(
+            "http://api.openweathermap.org/data/2.5/forecast?appid={}"
+            "&lat={}&lon={}".format(
                 self.key,
                 location.latitude,
                 location.longitude
-            ))
+            )
+        )
 
         try:
             city = r["city"]
@@ -373,7 +422,11 @@ class Forecast:
             country = city["country"]
             flag = ":flag_{}:".format(str(country).lower())
 
-            title = "5 Day Forecast for {}, {} {}".format(city_name, country, flag)
+            title = "5 Day Forecast for {}, {} {}".format(
+                city_name,
+                country,
+                flag
+            )
         except KeyError:
             title = "5 Day Forecast for {}".format(location)
 
@@ -413,7 +466,10 @@ class Forecast:
             # Average the temp, strip weather duplicates
             days[day]["main"]["temp"] /= days[day]["day_count"]
             embed.add_field(
-                name=datetime.datetime.strptime(day, "%Y-%m-%d").strftime("%A, %b %d, %Y") + ":",
+                name=(
+                    datetime.datetime.strptime(day, "%Y-%m-%d")
+                    .strftime("%A, %b %d, %Y") + ":"
+                ),
                 value=self.get_weather_text(days[day]),
                 inline=False
             )

@@ -239,7 +239,16 @@ class GetFilter:
 		buffer.seek(0)
 		
 		# Send image
+		
+		text = (
+			("Ignore Colours", str(f["ignore_colour"]).title(),),
+			("Name", f["name"],),
+			("Punishment", f["action"],),
+			("Reason", f["reason"],)
+		)
+		
 		await message.channel.send(
+			"\n".join([": ".join(n for n in text)]),
 			file=File(
 				fp=buffer,
 				filename="filter.png"

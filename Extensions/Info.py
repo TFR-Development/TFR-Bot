@@ -23,7 +23,9 @@ class BotInfo:
                     colour=Colour.from_rgb(180, 111, 255)
                 ).add_field(
                     name="Username",
-                    value=self.client.user.name + "#" + self.client.user.discriminator,
+                    value=str(self.client.user),
+                    # discord.py User has the __str__ method which
+                    # formats to the full name including discriminator
                     inline=True
                 ).add_field(
                     name="Bot ID",
@@ -35,7 +37,7 @@ class BotInfo:
                     inline=True
                 ).add_field(
                     name="Owner",
-                    value="<@" + str(self.client.config.owner_id) + ">",
+                    value=f"<@{self.client.config.owner_id}>",
                     inline=True
                 ).add_field(
                     name="Admin(s)",
@@ -49,7 +51,9 @@ class BotInfo:
                     inline=True
                 ).add_field(
                     name="Source",
-                    value="[Bot](https://github.com/TFR-Development/TFR-Bot)\n[API](https://github.com/TFR-Development/TFR-API)",
+                    value="[Bot](https://github.com/TFR-Development/"
+                          "TFR-Bot)\n[API](https://github.com/"
+                          "TFR-Development/TFR-API)",
                     inline=True
                 ).set_thumbnail(
                     url=self.gen_icon(
@@ -62,6 +66,7 @@ class BotInfo:
 
     @staticmethod
     def get_admins(admin_list):
+        # Formats the admin_list into a string
         admins = ""
         for admin_id in admin_list:
             admins += "<@{}>\n".format(admin_id)
@@ -69,7 +74,9 @@ class BotInfo:
 
     @staticmethod
     def gen_icon(user_id, icon):
-        return f"https://cdn.discordapp.com/avatars/{user_id}/{icon}.png?size=1024"
+        # Formats the bots icon from the user_id and icon
+        return f"https://cdn.discordapp.com/avatars/{user_id}/" \
+               f"{icon}.png?size=1024"
 
 
 class ServerInfo:
@@ -108,7 +115,7 @@ class ServerInfo:
                     inline=True
                 ).add_field(
                     name="Owner",
-                    value="<@" + str(message.guild.owner_id) + ">",
+                    value=f"<@{message.guild.owner_id}>",
                     inline=True
                 ).add_field(
                     name="Region",
@@ -136,7 +143,7 @@ class ServerInfo:
                         [
                             " ".join([w.title() for w in f.split("_")])
                             for f in message.guild.features
-                        ]
+                        ]  # Formats the premium features
                     ) or "None",
                     inline=True
                 ).set_thumbnail(
@@ -148,7 +155,7 @@ class ServerInfo:
                 )
             )
         )
-
+        
     @staticmethod
     def max_emojis(emojis, limit):
         total = ""
