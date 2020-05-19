@@ -49,14 +49,17 @@ import_errors = (
 for file in listdir("Events"):
 	# Load all event files
 
-	if not file.endswith(".py"):
+	if not file.endswith(".py") or file != "on_ready.py":
 		# Not a python file, ignore
 		continue
+	
+	module = None
 	
 	try:
 		module = import_module(f"Events.{file.split('.')[0]}")
 	except import_errors as e:
 		client.failed_events.append((file, e,))
+		continue
 	
 	if not hasattr(module, "setup"):
 		# The file doesn't have a setup function, warn and continue
@@ -73,10 +76,12 @@ for extension in listdir("Extensions"):
 		# Not a python file
 		continue
 	
+	cmd = None
 	try:
 		cmd = import_module(f"Extensions.{extension.split('.')[0]}")
 	except import_errors as e:
 		client.failed_commands.append((extension, e,))
+		continue
 	
 	if not hasattr(cmd, "setup"):
 		# File has no setup function, warn and continue

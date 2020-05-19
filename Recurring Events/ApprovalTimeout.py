@@ -7,7 +7,7 @@ from discord.errors import Forbidden
 class ApprovalTimeout:
     def __init__(self, client):
         self.client = client
-        self.day = timedelta(days=1)
+        self.day = timedelta(hours=12)
         
     async def run(self):
         tfr = find(
