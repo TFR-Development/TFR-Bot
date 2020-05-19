@@ -49,7 +49,7 @@ import_errors = (
 for file in listdir("Events"):
 	# Load all event files
 
-	if not file.endswith(".py") or file != "on_ready.py":
+	if not file.endswith(".py"):
 		# Not a python file, ignore
 		continue
 	
