@@ -49,7 +49,7 @@ class AutoModHandler:
 			"kick": self.kick_user,
 			"softban": self.softban_user,
 			"strike": self.strike_user,
-			"delete": lambda *_: True
+			"delete": self.delete_msg
 		}
 		
 	def gen_perms(self, msg):
