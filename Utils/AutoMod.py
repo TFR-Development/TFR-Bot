@@ -88,7 +88,7 @@ class AutoModHandler:
 				# Unknown action, how did this happen?
 				continue
 			
-			if message.guild.me.permissions.manage_messages:
+			if message.guild.me.guild_permissions.manage_messages:
 				# If the bot has perms to delete the message, do so
 				await message.delete()
 
