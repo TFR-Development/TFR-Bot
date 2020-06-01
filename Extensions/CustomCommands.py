@@ -110,7 +110,7 @@ class CCHelp:
 		colour=Colour.from_rgb(180, 111, 255),
 		description="\n\n".join(
 			(
-				"`(blacklist <id> [id...]` - Blacklists the user / "
+				"`(blacklist <id> [id...])` - Blacklists the user / "
 				"channel / role from using the command - if multiple "
 				"arguments are given they must be separated with a "
 				"comma",
