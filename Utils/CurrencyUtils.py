@@ -31,6 +31,9 @@ class CurrencyGuild:
 		)
 	
 	def get_member(self, user_id):
+		if not isinstance(user_id, int) and user_id.isdigit():
+			user_id = int(user_id)
+		
 		if user_id in self._members.keys():
 			return CurrencyMember(
 				self.client,

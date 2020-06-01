@@ -1,5 +1,6 @@
 from discord import Embed, Colour
 from asyncio import TimeoutError as AsyncioTimeoutError
+from Utils.CustomCommand import CustomCommand
 
 
 class Help:
@@ -36,11 +37,11 @@ class Help:
 		if args:
 			# If any arguments were supplied, search for a command
 			# with that name
-			cmd = self.client.CommandHandler.get_command(args[0])
+			cmd = self.client.command_handler.get_command(args[0])
 
 			if not cmd:
 				# No command with that name was found
-				return await self.client.Errors.InvalidArgs(
+				return await self.client.errors.InvalidArgs(
 					args[0],
 					"command"
 				).send(message.channel)
@@ -51,7 +52,7 @@ class Help:
 			
 			permission_level = (
 				"Permission: " +
-				self.client.CalculatePermissions().as_string(
+				self.client.calculate_permissions().as_string(
 					cmd.perm_level
 				) + f" ({cmd.perm_level})"
 			)
@@ -83,7 +84,7 @@ class Help:
 		categories = {}
 		
 		commands = [
-			cmd for cmd in self.client.CommandHandler.commands
+			cmd for cmd in self.client.command_handler.commands
 			if cmd.perm_level <= command.author_perm_level
 		]
 		# Filter all commands by those which the message author has
@@ -254,10 +255,10 @@ class Help:
 					# Somehow page is a negative vale, set to 0
 					page = 0
 					
-				while page >= length:
+				if page >= length:
 					# Page is outside the range of the menu (greater),
 					# decrement
-					page -= 1
+					page = length - 1
 				
 				help_embed.description = menu_pages[page]["value"]
 				footer = []
@@ -303,4 +304,4 @@ class Help:
 
 
 def setup(client):
-	client.CommandHandler.add_command(Help(client))
+	client.command_handler.add_command(Help(client))

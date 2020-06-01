@@ -49,7 +49,8 @@ class MissingPermissions(ErrorBase):
 				type="rich",
 				colour=Colour.from_rgb(255, 70, 73),
 				title="Missing Permissions",
-				description="You do not have permission to run this command"
+				description=
+				"You do not have permission to run this command"
 			)
 		)
 
@@ -61,9 +62,8 @@ class MissingFile(ErrorBase):
 				type="rich",
 				colour=Colour.from_rgb(255, 70, 73),
 				title="Missing File",
-				description=(
-					f"Expected {file_type} to be attached to the message"
-				)
+				description=
+				f"Expected {file_type} to be attached to the message"
 			)
 		)
 
@@ -87,10 +87,9 @@ class NoAPIConnection(ErrorBase):
 				type="rich",
 				colour=Colour.from_rgb(255, 70, 73),
 				title="No API Connection",
-				description=(
-					"Unable to connect to the API, please contact a Bot"
-					" Owner or Bot Admin"
-				)
+				description=
+				"Unable to connect to the API, please contact a Bot"
+				" Owner or Bot Admin"
 			)
 		)
 
@@ -102,10 +101,9 @@ class APIError(ErrorBase):
 				type="rich",
 				colour=Colour.from_rgb(255, 70, 73),
 				title="API Error",
-				description=(
-					"Error from API request, please contact a Bot Admin / "
-					"Owner"
-				),
+				description=
+				"Error from API request, please contact a "
+				"Bot Admin / Owner"
 			)
 		)
 
@@ -129,7 +127,8 @@ class NoQOTDChannel(ErrorBase):
 				type="rich",
 				colour=Colour.from_rgb(255, 70, 73),
 				title="No QOTD Channel Set",
-				description="No QOTD channel has been set for this server"
+				description=
+				"No QOTD channel has been set for this server"
 			)
 		)
 
@@ -141,7 +140,8 @@ class InvalidQOTDChannel(ErrorBase):
 				type="rich",
 				colour=Colour.from_rgb(255, 70, 73),
 				title="Invalid QOTD Channel",
-				description="The QOTD channel which was set is now invalid"
+				description=
+				"The QOTD channel which was set is now invalid"
 			)
 		)
 
@@ -153,7 +153,8 @@ class UnchangedOutput(ErrorBase):
 				type="rich",
 				colour=Colour.from_rgb(255, 70, 73),
 				title="No Conversion Necessary",
-				description=f"`{from_type}` and `{to_type}` are the same"
+				description=
+				f"`{from_type}` and `{to_type}` are the same"
 			)
 		)
 
@@ -165,9 +166,8 @@ class PlaceNotFound(ErrorBase):
 				type="rich",
 				colour=Colour.from_rgb(255, 70, 73),
 				title="Place Not Found",
-				description=(
-					f"There is no place found with the name `{place_name}`"
-				)
+				description=
+				f"There is no place found with the name `{place_name}`"
 			)
 		)
 
@@ -191,7 +191,8 @@ class MissingImages(ErrorBase):
 				type="rich",
 				colour=Colour.from_rgb(255, 70, 73),
 				title="Missing files",
-				description="You didn't attach any images to your command"
+				description=
+				"You didn't attach any images to your command"
 			)
 		)
 
@@ -215,7 +216,8 @@ class FileReadError(ErrorBase):
 				type="rich",
 				colour=Colour.from_rgb(255, 70, 73),
 				title="Error",
-				description="There was an error when attempting to open the image"
+				description=
+				"There was an error when attempting to open the image"
 			)
 		)
 
@@ -255,5 +257,67 @@ class FetchAvatarError(ErrorBase):
 				colour=Colour.from_rgb(255, 70, 73),
 				title="Unable to fetch user avatar",
 				description="Error while fetching the users avatar"
+			)
+		)
+
+
+class CustomCommandError(ErrorBase):
+	def __init__(self, err):
+		super().__init__(
+			Embed(
+				type="rich",
+				colour=Colour.from_rgb(255, 70, 73),
+				title="Error when creating command",
+				description=err
+			)
+		)
+
+
+class MissingCustom(ErrorBase):
+	def __init__(self, err):
+		super().__init__(
+			Embed(
+				type="rich",
+				colour=Colour.from_rgb(255, 70, 73),
+				title="Command not found",
+				description=f"No command found called {err}"
+			)
+		)
+
+
+class InCooldown(ErrorBase):
+	def __init__(self, cooldown):
+		super().__init__(
+			Embed(
+				type="rich",
+				colour=Colour.from_rgb(255, 70, 73),
+				title="This command is on cooldown",
+				description=f"You can run this command again "
+				f"in {cooldown}",
+			)
+		)
+
+
+class GamblingSuspended(ErrorBase):
+	def __init__(self):
+		super().__init__(
+			Embed(
+				type="rich",
+				colour=Colour.from_rgb(255, 70, 73),
+				title="Gambling suspended",
+				description="Your usage of gambling commands has been"
+				" temporarily suspended"
+			)
+		)
+
+
+class InvalidUser(ErrorBase):
+	def __init__(self, u):
+		super().__init__(
+			Embed(
+				type="rich",
+				colour=Colour.from_rgb(255, 70, 73),
+				title="User not found",
+				description=f"Could not find user {u}"
 			)
 		)

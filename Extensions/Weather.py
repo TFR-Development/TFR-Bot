@@ -95,26 +95,26 @@ class TempConvert:
 
     async def run(self, _, message, *args):
         if len(args) == 0:
-            return await self.client.Errors.MissingArgs(
+            return await self.client.errors.MissingArgs(
                 "temperature"
             ).send(
                 message.channel
             )
 
-        self.client.ArgsParser.get_args(
+        self.client.args_parser.get_args(
             message,
             *args
         )
 
         if len(args) < 2:
-            return await self.client.Errors.MissingArgs(
+            return await self.client.errors.MissingArgs(
                 "from_type"
             ).send(
                 message.channel
             )
 
         if len(args) < 3:
-            return await self.client.Errors.MissingArgs(
+            return await self.client.errors.MissingArgs(
                 "to_type"
             ).send(
                 message.channel
@@ -127,7 +127,7 @@ class TempConvert:
         try:
             m = int(args[0])
         except ValueError:
-            return await self.client.Errors.InvalidArgs(
+            return await self.client.errors.InvalidArgs(
                 args[0],
                 "temperature"
             ).send(message.channel)
@@ -152,19 +152,19 @@ class TempConvert:
 
         if not f:
             # Invalid from type
-            return await self.client.Errors.InvalidArgs(
+            return await self.client.errors.InvalidArgs(
                 args[1],
                 "from_type"
             ).send(message.channel)
         if not t:
             # Invalid to type
-            return await self.client.Errors.InvalidArgs(
+            return await self.client.errors.InvalidArgs(
                 args[2],
                 "to_type"
             ).send(message.channel)
         if f == t:
             # Same in as out
-            return await self.client.Errors.UnchangedOutput(
+            return await self.client.errors.UnchangedOutput(
                 str(f),
                 str(t)
             ).send(message.channel)
@@ -289,13 +289,13 @@ class Weather:
 
     async def run(self, _, message, *args):
         if len(args) == 0:
-            return await self.client.Errors.MissingArgs(
+            return await self.client.errors.MissingArgs(
                 "place_name"
             ).send(
                 message.channel
             )
 
-        self.client.ArgsParser.get_args(
+        self.client.args_parser.get_args(
             message,
             *args
         )
@@ -307,7 +307,7 @@ class Weather:
         location = self.geo.geocode(str(place_name))
 
         if location is None:
-            return await self.client.Errors.PlaceNotFound(
+            return await self.client.errors.PlaceNotFound(
                 place_name
             ).send(
                 message.channel
@@ -382,13 +382,13 @@ class Forecast:
 
     async def run(self, _, message, *args):
         if len(args) == 0:
-            return await self.client.Errors.MissingArgs(
+            return await self.client.errors.MissingArgs(
                 "place_name"
             ).send(
                 message.channel
             )
 
-        self.client.ArgsParser.get_args(
+        self.client.args_parser.get_args(
             message,
             *args
         )
@@ -400,7 +400,7 @@ class Forecast:
         location = self.geo.geocode(str(place_name))
 
         if location is None:
-            return await self.client.Errors.PlaceNotFound(
+            return await self.client.errors.PlaceNotFound(
                 place_name
             ).send(
                 message.channel
@@ -478,7 +478,7 @@ class Forecast:
 
 
 def setup(client):
-    client.CommandHandler.add_commands(
+    client.command_handler.add_commands(
         TempConvert(client),
         Weather(client),
         Forecast(client)

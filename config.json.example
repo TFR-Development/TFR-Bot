@@ -9,4 +9,6 @@
 	"xp_cooldown": 60,
 	"openweathermap_key": "",
 	"webhook": "",
+	"timely_amount": 20,
+	"currency_name": ""
 }

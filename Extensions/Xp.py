@@ -69,7 +69,7 @@ class Xp:
 			# A user was supplied as an argument
 			if not self.user_resolvable.match(args):
 				# args isn't a user resolvable
-				return await self.client.Errors.InvalidArgs(
+				return await self.client.errors.InvalidArgs(
 					args,
 					"user"
 				).send(message.channel)
@@ -78,7 +78,7 @@ class Xp:
 
 			if not user:
 				# No user found from the resolvable
-				return await self.client.Errors.InvalidArgs(
+				return await self.client.errors.InvalidArgs(
 					args,
 					"user"
 				).send(message.channel)
@@ -89,11 +89,11 @@ class Xp:
 		
 		# Retrieve the total xp for the guild to form a leader board
 		ctx = list(
-			self.client.DataBaseManager.get_table("xp").filter(
+			self.client.data_base_manager.get_table("xp").filter(
 				{
 					"guild": str(message.guild.id)
 				}
-			).run(self.client.DataBaseManager.connection)
+			).run(self.client.data_base_manager.connection)
 		)
 		
 		ctx.sort(key=lambda u: u["xp"], reverse=True)
@@ -111,7 +111,7 @@ class Xp:
 				
 		if not rank_lb:
 			# Couldn't find there user in the lb (somehow??)
-			return await self.client.Errors.NoXP().send(message.channel)
+			return await self.client.errors.NoXP().send(message.channel)
 			
 		draw = ImageDraw.Draw(xp)
 		
@@ -142,7 +142,7 @@ class Xp:
 		draw.text(
 			(120, 220,),
 			"Lvl " + str(
-				self.client.DataBaseManager.xp_level(
+				self.client.data_base_manager.xp_level(
 					str(message.guild.id),
 					str(member.get("id"))
 				)
@@ -184,7 +184,7 @@ class Xp:
 		
 		if not av_request:
 			# if some exception causes a status != 200
-			return await self.client.Errors.FetchAvatarError().send(
+			return await self.client.errors.FetchAvatarError().send(
 				message.channel
 			)
 		
@@ -249,4 +249,4 @@ class Xp:
 
 
 def setup(client):
-	client.CommandHandler.add_command(Xp(client))
+	client.command_handler.add_command(Xp(client))

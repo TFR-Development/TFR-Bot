@@ -14,12 +14,12 @@ class Prefix:
 	async def run(self, _, message, *args):
 		if len(args) == 0:
 			# No args provided, send messing args error
-			return await self.client.Errors.MissingArgs("prefix").send(
+			return await self.client.errors.MissingArgs("prefix").send(
 				message.channel
 			)
 		
 		new_prefix = " ".join(args)
-		self.client.DataBaseManager.update_prefix(
+		self.client.data_base_manager.update_prefix(
 			message.guild.id,
 			new_prefix
 		)
@@ -31,6 +31,6 @@ class Prefix:
 
 
 def setup(client):
-	client.CommandHandler.add_commands(
+	client.command_handler.add_commands(
 		Prefix(client)
 	)

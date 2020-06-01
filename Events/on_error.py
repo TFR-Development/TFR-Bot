@@ -7,7 +7,7 @@ class ErrorHandler:
 		self.client.event(self.on_error)
 		
 	async def on_error(self, event, *_, **__):
-		await self.client.WebhookManager.send(
+		await self.client.webhook_manager.send(
 			f"Exception in `{event}`\n```py\n{format_exc()}```"
 		)
 

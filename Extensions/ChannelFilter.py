@@ -62,12 +62,12 @@ class AddChannelFilter:
 		# arguments
 		args = self.client.API.request(
 			route="argparser",
-			Message=" ".join(args)
+			message=" ".join(args)
 		)
 		
 		if args == -1:
 			# Connecting to API failed
-			return await self.client.Errors.NoAPIConnection().send(
+			return await self.client.errors.NoAPIConnection().send(
 				message.channel
 			)
 		
@@ -75,7 +75,7 @@ class AddChannelFilter:
 		
 		if len(args) < 1:
 			# No Args
-			return await self.client.Errors.MissingArgs(
+			return await self.client.errors.MissingArgs(
 				"punishment"
 			).send(message.channel)
 		
@@ -83,13 +83,13 @@ class AddChannelFilter:
 		
 		if punishment not in self.punishments:
 			# Punishments not an accepted punishment, reject
-			return await self.client.Errors.InvalidArgs(
+			return await self.client.errors.InvalidArgs(
 				punishment, "punishment"
 			).send(message.channel)
 		
 		if len(args) < 2:
 			# No Regular Expression supplied as a filter
-			return await self.client.Errors.MissingArgs(
+			return await self.client.errors.MissingArgs(
 				"RegEx filter"
 			)
 		
@@ -98,13 +98,13 @@ class AddChannelFilter:
 		except re_error as e:
 			# The supplied Regular Expression was invalid, (compiling
 			# failed), send the error to the channel
-			return await self.client.Errors.InvalidRegEx(
+			return await self.client.errors.InvalidRegEx(
 				e
 			).send(message.channel)
 		
 		if len(args) < 3:
 			# No channel supplied
-			return await self.client.Errors.MissingArgs(
+			return await self.client.errors.MissingArgs(
 				"channel"
 			).send(message.channel)
 		
@@ -112,7 +112,7 @@ class AddChannelFilter:
 		
 		if not channel:
 			# Unable to find channel from channel resolvable (args[2])
-			return await self.client.Errors.InvalidArgs(
+			return await self.client.errors.InvalidArgs(
 				args[2], "channel"
 			).send(message.channel)
 		
@@ -120,7 +120,7 @@ class AddChannelFilter:
 		# Reason, defaulting to "[AUTOMOD FILTER]" if no other reason
 		# provided
 		
-		self.client.DataBaseManager.add_text_filter(
+		self.client.data_base_manager.add_text_filter(
 			punishment, args[1], channel.id, reason,
 			str(message.guild.id)
 		)
@@ -196,7 +196,7 @@ class ListFilters:
 			if not channel:
 				# No channel found from the given resolvable, send an
 				# error to the channel
-				return await self.client.Errors.InvalidArgs(
+				return await self.client.errors.InvalidArgs(
 					"-".join(args),
 					"channel"
 				)
@@ -205,7 +205,7 @@ class ListFilters:
 		
 		# Retrieve all filters for the current guild and channel (if
 		# specified)
-		filters = self.client.DataBaseManager.get_filters(
+		filters = self.client.data_base_manager.get_filters(
 			message.guild.id,
 			channel
 		)
@@ -390,12 +390,12 @@ class RemoveChannelFilter:
 	async def run(self, _, message, *args):
 		if len(args) == 0:
 			# No args provided to the command
-			return await self.client.Errors.MissingArgs("id").send(
+			return await self.client.errors.MissingArgs("id").send(
 				message.channel
 			)
 		
 		# Check the filter exists and belongs to the current guild
-		valid = self.client.DataBaseManager.filter_exists(
+		valid = self.client.data_base_manager.filter_exists(
 			message.guild.id,
 			args[0],
 			"text"
@@ -404,17 +404,17 @@ class RemoveChannelFilter:
 		if not valid:
 			# Send an error message if the filter id isn't valid for
 			# this guild
-			return await self.client.Errors.InvalidArgs(
+			return await self.client.errors.InvalidArgs(
 				args[0], "id"
 			).send(
 				message.channel
 			)
 		
 		(
-			self.client.DataBaseManager.get_table("filters")
+			self.client.data_base_manager.get_table("filters")
 			.get(args[0])
 			.delete()
-			.run(self.client.DataBaseManager.connection)
+			.run(self.client.data_base_manager.connection)
 		)
 		
 		await message.channel.send(
@@ -429,7 +429,7 @@ class RemoveChannelFilter:
 
 
 def setup(client):
-	client.CommandHandler.add_commands(
+	client.command_handler.add_commands(
 		AddChannelFilter(client),
 		ListFilters(client),
 		RemoveChannelFilter(client)

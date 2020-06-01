@@ -33,10 +33,11 @@ class ReadyEvent:
 		client.event(self.on_ready)
 		
 	async def on_ready(self):
+		
 		# Log bot online
 		print(f"{self.client.user} is ready")
 		
-		await self.client.WebhookManager.send(
+		await self.client.webhook_manager.send(
 			f"{self.client.user} is ready"
 		)
 		
@@ -44,24 +45,24 @@ class ReadyEvent:
 		
 			commands = [
 				f"`{cmd.name}`" for cmd in
-				self.client.CommandHandler.commands
+				self.client.command_handler.commands
 			]
 			
 			commands.sort(key=lambda c: c[1:-1])
 			
-			await self.client.WebhookManager.send(
+			await self.client.webhook_manager.send(
 				f"Loaded commands: {', '.join(commands)}"
 			)
 			
 			self._sent_load_success = True
 			for e in self.client.failed_events:
-				await self.client.WebhookManager.send(
+				await self.client.webhook_manager.send(
 					f"Failed to load event {e[0]} for ```py\n{e[1]}```"
 				)
 				await sleep(2)
 				
 			for e in self.client.failed_commands:
-				await self.client.WebhookManager.send(
+				await self.client.webhook_manager.send(
 					f"Failed to load command {e[0]} for "
 					f"```py\n{e[1]}```"
 				)
