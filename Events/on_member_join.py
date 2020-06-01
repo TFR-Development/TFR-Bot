@@ -7,7 +7,7 @@ from base64 import b64encode
 class MemberJoin:
 	def __init__(self, client):
 		self.client = client
-		# client.event(self.on_member_join)
+		client.event(self.on_member_join)
 	
 	async def on_member_join(self, member):
 		try:
