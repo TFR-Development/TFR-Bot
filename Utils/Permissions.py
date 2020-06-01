@@ -1,42 +1,44 @@
 class Permissions:
+	
+	perms = [
+		{
+			"name": "Everyone",
+			"level": 0
+		},
+		{
+			"name": "Partner Manager",
+			"level": 1
+		},
+		{
+			"name": "Helper",
+			"level": 2
+		},
+		{
+			"name": "Moderator",
+			"level": 3
+		},
+		{
+			"name": "Administrator",
+			"level": 4
+		},
+		{
+			"name": "Server Owners",
+			"level": 5
+		},
+		{
+			"name": "Bot Admins",
+			"level": 9
+		},
+		{
+			"name": "Bot Owner",
+			"level": 10
+		}
+	]
+	
 	def __init__(self, client=None, user=None, guild=None):
 		self.client = client
 		self.user = user
 		self.guild = guild
-		self.perms = [
-			{
-				"name": "Everyone",
-				"level": 0
-			},
-			{
-				"name": "Partner Manager",
-				"level": 1
-			},
-			{
-				"name": "Helper",
-				"level": 2
-			},
-			{
-				"name": "Moderator",
-				"level": 3
-			},
-			{
-				"name": "Administrator",
-				"level": 4
-			},
-			{
-				"name": "Server Owners",
-				"level": 5
-			},
-			{
-				"name": "Bot Admins",
-				"level": 9
-			},
-			{
-				"name": "Bot Owner",
-				"level": 10
-			}
-		]
 		
 	def calculate(self):
 		for perm in list(reversed(self.perms)):
@@ -59,12 +61,12 @@ class Permissions:
 			return False
 		
 		guild_conf = list(
-			self.client.DataBaseManager.get_table("guilds")
+			self.client.data_base_manager.get_table("guilds")
 			.filter(
 				{
 					"guild": str(guild.id)
 				}
-			).run(self.client.DataBaseManager.connection)
+			).run(self.client.data_base_manager.connection)
 		)[0]
 		# Find guild entry in the guilds table
 		
@@ -85,12 +87,12 @@ class Permissions:
 			return False
 		
 		guild_conf = list(
-			self.client.DataBaseManager.get_table("guilds").filter(
+			self.client.data_base_manager.get_table("guilds").filter(
 				{
 					"guild": str(guild.id)
 				}
 			)
-			.run(self.client.DataBaseManager.connection)
+			.run(self.client.data_base_manager.connection)
 		)[0]
 		# Retrieve the guild entry from the guilds table
 		
@@ -113,12 +115,12 @@ class Permissions:
 			return False
 		
 		guild_conf = list(
-			self.client.DataBaseManager.get_table("guilds").filter(
+			self.client.data_base_manager.get_table("guilds").filter(
 				{
 					"guild": str(guild.id)
 				}
 			)
-			.run(self.client.DataBaseManager.connection)
+			.run(self.client.data_base_manager.connection)
 		)[0]
 		# Retrieve the entry from the guilds table
 		
@@ -139,12 +141,12 @@ class Permissions:
 			return False
 		
 		guild_conf = list(
-			self.client.DataBaseManager.get_table("guilds").filter(
+			self.client.data_base_manager.get_table("guilds").filter(
 				{
 					"guild": str(guild.id)
 				}
 			)
-			.run(self.client.DataBaseManager.connection)
+			.run(self.client.data_base_manager.connection)
 		)[0]
 		# Retrieve the entry from the guilds table
 		
@@ -170,12 +172,12 @@ class Permissions:
 			return True
 		
 		guild_conf = list(
-			self.client.DataBaseManager.get_table("guilds").filter(
+			self.client.data_base_manager.get_table("guilds").filter(
 				{
 					"guild": str(guild.id)
 				}
 			)
-			.run(self.client.DataBaseManager.connection)
+			.run(self.client.data_base_manager.connection)
 		)[0]
 		# Retrieve the entry from the guilds table
 		

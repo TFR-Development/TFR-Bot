@@ -9,7 +9,7 @@ class ArgsParser:
         ).get("Message", [])
 
         if args == -1:
-            return self.client.Errors.NoAPIConnection().send(
+            return self.client.errors.NoAPIConnection().send(
                 message.channel
             )
 

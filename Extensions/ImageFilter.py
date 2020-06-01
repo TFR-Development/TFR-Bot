@@ -37,7 +37,7 @@ class AddFilter:
 		
 		if args == -1:
 			# Error connecting to API
-			return await self.client.Errors.NoAPIConnection().send(
+			return await self.client.errors.NoAPIConnection().send(
 				message.channel
 			)
 		
@@ -45,7 +45,7 @@ class AddFilter:
 		
 		if len(args) < 1:
 			# No args provided
-			return await self.client.Errors.MissingArgs(
+			return await self.client.errors.MissingArgs(
 				"filter name"
 			).send(message.channel)
 
@@ -53,22 +53,22 @@ class AddFilter:
 		
 		if len(filter_name) == 0:
 			# Empty name
-			return await self.client.Errors.MissingFilterName().send(
+			return await self.client.errors.MissingFilterName().send(
 				message.channel
 			)
 
-		if self.client.DataBaseManager.img_filter_exists(
+		if self.client.data_base_manager.img_filter_exists(
 				message.guild.id, filter_name):
 			# A filter with this name already exists, allowing
 			# multiple filters with the same name would cause
 			# complications
-			return await self.client.Errors.ExistingFilterName(
+			return await self.client.errors.ExistingFilterName(
 				filter_name
 			).send(message.channel)
 
 		if len(args) < 2:
 			# Missing a reason
-			return await self.client.Errors.MissingArgs("reason").send(
+			return await self.client.errors.MissingArgs("reason").send(
 				message.channel
 			)
 
@@ -79,7 +79,7 @@ class AddFilter:
 
 		if len(args) < 3:
 			# Missing a punishment argument
-			return await self.client.Errors.MissingArgs(
+			return await self.client.errors.MissingArgs(
 				"punishment"
 			).send(message.channel)
 
@@ -102,7 +102,7 @@ class AddFilter:
 
 		if len(message.attachments) == 0:
 			# No image attached
-			return await self.client.Errors.MissingImages().send(
+			return await self.client.errors.MissingImages().send(
 				message.channel
 			)
 
@@ -110,7 +110,7 @@ class AddFilter:
 
 		if not file.filename.lower().endswith(".png"):
 			# Currently only accepts *.png files
-			return await self.client.Errors.InvalidFile().send(
+			return await self.client.errors.InvalidFile().send(
 				message.channel
 			)
 
@@ -118,7 +118,7 @@ class AddFilter:
 			# Attempt to read image attachment
 			raw_img = await file.read()
 		except (HTTPException, Forbidden, NotFound):
-			return await self.client.Errors.FileReadError().send(
+			return await self.client.errors.FileReadError().send(
 				message.channel
 			)
 
@@ -127,7 +127,7 @@ class AddFilter:
 		# raw bytes to a string
 		
 		# Insert image filter into db
-		self.client.DataBaseManager.insert_img_filter(
+		self.client.data_base_manager.insert_img_filter(
 			str(message.guild.id),
 			b64_encoded_img,
 			mode,
@@ -160,7 +160,7 @@ class ListFilters:
 
 	async def run(self, _, message, *__):
 		# Retrieve all image filters for the current guild
-		filters = self.client.DataBaseManager.get_img_filters(
+		filters = self.client.data_base_manager.get_img_filters(
 			str(message.guild.id)
 		)
 
@@ -209,18 +209,18 @@ class GetFilter:
 	async def run(self, _, message, *args):
 		if len(args) == 0:
 			# No args
-			return self.client.Errors.MissingArgs("id").send(
+			return self.client.errors.MissingArgs("id").send(
 				message.channel
 			)
 
-		f = self.client.DataBaseManager.get_img_filter(
+		f = self.client.data_base_manager.get_img_filter(
 			str(message.guild.id),
 			args[0]
 		)
 
 		if not f:
 			# No filter found matching ID and guild
-			return await self.client.Errors.InvalidArgs(
+			return await self.client.errors.InvalidArgs(
 				args[0],
 				"ID"
 			).send(message.channel)
@@ -257,7 +257,7 @@ class GetFilter:
 
 
 def setup(client):
-	client.CommandHandler.add_commands(
+	client.command_handler.add_commands(
 		AddFilter(client),
 		ListFilters(client),
 		GetFilter(client)

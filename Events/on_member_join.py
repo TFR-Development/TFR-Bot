@@ -11,15 +11,18 @@ class MemberJoin:
 	
 	async def on_member_join(self, member):
 		try:
-			av = await member.avatar_url_as(format="png", size=1024).read()
+			av = await member.avatar_url_as(
+				format="png",
+				size=1024
+			).read()
 
 			# Run image AutoMod against new users avatar
-			await self.client.AutoMod.image_filter(
+			await self.client.auto_mod.image_filter(
 				b64encode(av).decode(),
 				member
 			)
 
-		except (DiscordException, HTTPException, NotFound) as e:
+		except (DiscordException, HTTPException, NotFound):
 			# Exceptions from fetching users avatar, fail silently
 			pass
 

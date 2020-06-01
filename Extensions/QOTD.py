@@ -26,7 +26,7 @@ class QOTDAdd:
 		
 	async def run(self, _, message, *args):
 		if len(args) == 0:
-			return await self.client.Errors.MissingArgs(
+			return await self.client.errors.MissingArgs(
 				"question"
 			).send(message.channel)
 		
@@ -38,7 +38,7 @@ class QOTDAdd:
 		
 		if res == -1:
 			# -1 indicates error connecting to API
-			return await self.client.Errors.NoAPIConnection().send(
+			return await self.client.errors.NoAPIConnection().send(
 				message.channel
 			)
 		
@@ -46,7 +46,7 @@ class QOTDAdd:
 		
 		if len(args) < 1:
 			# No question arg provided
-			return await self.client.Errors.MissingArgs(
+			return await self.client.errors.MissingArgs(
 				"question"
 			).send(
 				message.channel
@@ -54,7 +54,7 @@ class QOTDAdd:
 		
 		if len(args) < 2:
 			# No thought arg provided
-			return await self.client.Errors.MissingArgs(
+			return await self.client.errors.MissingArgs(
 				"thought"
 			).send(
 				message.channel
@@ -62,7 +62,7 @@ class QOTDAdd:
 		
 		if len(args) < 3:
 			# No fact arg provided
-			return await self.client.Errors.MissingArgs(
+			return await self.client.errors.MissingArgs(
 				"fact"
 			).send(
 				message.channel
@@ -74,7 +74,7 @@ class QOTDAdd:
 		# being ignored
 
 		# Insert into the db
-		self.client.DataBaseManager.add_qotd(
+		self.client.data_base_manager.add_qotd(
 			question,
 			thought,
 			fact,
@@ -113,13 +113,13 @@ class SendQOTD:
 		
 	async def run(self, _, message, *__):
 		# Retrieve all QOTD in the db for this guild
-		all_qotd = self.client.DataBaseManager.get_qotd(
+		all_qotd = self.client.data_base_manager.get_qotd(
 			str(message.guild.id)
 		)
 		
 		if len(all_qotd) == 0:
 			# This server didn't have any stored
-			return await self.client.Errors.NoQOTD().send(
+			return await self.client.errors.NoQOTD().send(
 				message.channel
 			)
 		
@@ -127,13 +127,13 @@ class SendQOTD:
 		qotd = choice(all_qotd)
 		
 		# Fetch the output channel from the db
-		channel = self.client.DataBaseManager.get_qotd_channel(
+		channel = self.client.data_base_manager.get_qotd_channel(
 			str(message.guild.id)
 		)
 		
 		if not channel:
 			# No channel found
-			return await self.client.Errors.NoQOTDChannel().send(
+			return await self.client.errors.NoQOTDChannel().send(
 				message.channel
 			)
 		
@@ -142,12 +142,12 @@ class SendQOTD:
 		
 		if not guild_channel:
 			# No channel found with that ID
-			return await self.client.Errors.InvalidQOTDChannel().send(
+			return await self.client.errors.InvalidQOTDChannel().send(
 				message.channel
 			)
 		
 		# Attempt to fetch the role to mention from the db
-		role_mention = self.client.DataBaseManager.get_qotd_role(
+		role_mention = self.client.data_base_manager.get_qotd_role(
 			message.guild.id
 		)
 		
@@ -212,7 +212,7 @@ class SendQOTD:
 		)
 
 		# Now it has been sent, delete it from the db
-		self.client.DataBaseManager.remove_qotd(qotd["id"])
+		self.client.data_base_manager.remove_qotd(qotd["id"])
 
 		# Get a channel to send the date to
 		response_channel = self.get_response_channel(message.guild)
@@ -277,7 +277,7 @@ class SetQOTDChannel:
 	async def run(self, _, message, *args):
 		if len(args) == 0:
 			# No args provided
-			return await self.client.Errors.MissingArgs("channel").send(
+			return await self.client.errors.MissingArgs("channel").send(
 				message.channel
 			)
 		
@@ -288,13 +288,13 @@ class SetQOTDChannel:
 	
 		if not channel:
 			# Channel not found
-			return await self.client.Errors.InvalidArgs(
+			return await self.client.errors.InvalidArgs(
 				channel_resolvable,
 				"channel"
 			).send(message.channel)
 		
 		# Update in db
-		self.client.DataBaseManager.set_qotd_channel(
+		self.client.data_base_manager.set_qotd_channel(
 			str(message.guild.id),
 			str(channel.id)
 		)
@@ -354,7 +354,7 @@ class SetQOTDRole:
 	async def run(self, _, message, *args):
 		if len(args) == 0:
 			# No args provided
-			return await self.client.Errors.MissingArgs("role").send(
+			return await self.client.errors.MissingArgs("role").send(
 				message.channel
 			)
 			
@@ -365,12 +365,12 @@ class SetQOTDRole:
 		
 		if not role:
 			# No role found
-			return await self.client.Errors.InvalidArgs(
+			return await self.client.errors.InvalidArgs(
 				role_resolvable, "role"
 			)
 		
 		# Update db entry
-		self.client.DataBaseManager.set_qotd_role(
+		self.client.data_base_manager.set_qotd_role(
 			str(message.guild.id),
 			str(role.id)
 		)
@@ -428,13 +428,13 @@ class QOTDList:
 
 	async def run(self, _, message, *__):
 		# Retrieve all the QOTD for this guild
-		all_qotd = self.client.DataBaseManager.get_all_qotd(
+		all_qotd = self.client.data_base_manager.get_all_qotd(
 			str(message.guild.id)
 		)
 		
 		if len(all_qotd) == 0:
 			# This guild doesn't have any QOTD in storage
-			return await self.client.Errors.NoQOTD().send(
+			return await self.client.errors.NoQOTD().send(
 				message.channel
 			)
 		
@@ -636,25 +636,25 @@ class RemoveQOTD:
 	async def run(self, _, message, *args):
 		if len(args) == 0:
 			# No args were provided
-			return await self.client.Errors.MissingArgs("QOTD ID").send(
+			return await self.client.errors.MissingArgs("QOTD ID").send(
 				message.channel
 			)
 
 		# Check a QOTD of the given ID both exists and was made by
 		# the current guild
-		valid = self.client.DataBaseManager.qotd_exists(
+		valid = self.client.data_base_manager.qotd_exists(
 			args[0],
 			message.guild.id
 		)
 
 		if not valid:
 			# Either doesn't exist or doesn't belong to this guild
-			return await self.client.Errors.InvalidArgs("QOTD ID").send(
+			return await self.client.errors.InvalidArgs("QOTD ID").send(
 				message.channel
 			)
 		
 		# Remove this QOTD
-		self.client.DataBaseManager.remove_qotd(args[0])
+		self.client.data_base_manager.remove_qotd(args[0])
 		
 		# Send a success receipt to the current channel
 		await message.channel.send(
@@ -668,7 +668,7 @@ class RemoveQOTD:
 		
 
 def setup(client):
-	client.CommandHandler.add_commands(
+	client.command_handler.add_commands(
 		QOTDAdd(client),
 		SendQOTD(client),
 		SetQOTDChannel(client),
