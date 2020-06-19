@@ -193,7 +193,7 @@ class ServerInfo:
 
 
 def setup(client):
-    client.CommandHandler.add_commands(
+    client.command_handler.add_commands(
         BotInfo(client),
         ServerInfo(client)
     )

@@ -23,13 +23,13 @@ class PermissionBase:
 		
 		if parsed == -1:
 			# API request failed, send an error
-			return await self.client.Errors.NoAPIConnection().send(
+			return await self.client.errors.NoAPIConnection().send(
 				message.channel
 			)
 		
 		if "Error" in parsed.keys():
 			# The API returned an error
-			return await self.client.Errors.APIError().send(
+			return await self.client.errors.APIError().send(
 				message.channel
 			)
 		
@@ -37,7 +37,7 @@ class PermissionBase:
 		
 		if len(args) < 1:
 			# No arguments supplied, send an error for missing args
-			return await self.client.Errors.MissingArgs("role").send(
+			return await self.client.errors.MissingArgs("role").send(
 				message.channel
 			)
 		
@@ -47,7 +47,7 @@ class PermissionBase:
 		
 		if not role:
 			# Role not found
-			return await self.client.Errors.InvalidArgs(
+			return await self.client.errors.InvalidArgs(
 				role_resolvable,
 				"role"
 			).send(
@@ -56,7 +56,7 @@ class PermissionBase:
 		
 		if len(args) < 2:
 			# No permission level supplied
-			return await self.client.Errors.MissingArgs(
+			return await self.client.errors.MissingArgs(
 				"perm level"
 			).send(message.channel)
 		
@@ -65,18 +65,18 @@ class PermissionBase:
 		
 		if perm not in self.perms:
 			# Invalid permission level
-			return await self.client.Errors.InvalidArgs(
+			return await self.client.errors.InvalidArgs(
 				perm,
 				"permission"
 			).send(message.channel)
 		
 		old_conf = list(
-			self.client.DataBaseManager.get_table("guilds")
+			self.client.data_base_manager.get_table("guilds")
 			.filter(
 				{
 					"guild": str(message.guild.id)
 				}
-			).run(self.client.DataBaseManager.connection)
+			).run(self.client.data_base_manager.connection)
 		)
 		# Retrieve the old config for permissions
 		
@@ -98,7 +98,7 @@ class PermissionBase:
 			# No match found, use an empty list
 			old_conf = []
 		
-		if role.id not in old_conf and mode == "remove":
+		if str(role.id) not in old_conf and mode == "remove":
 			return await message.channel.send(
 				embed=Embed(
 					type="rich",
@@ -115,13 +115,13 @@ class PermissionBase:
 			# Remove all duplicates and all instances of role.id
 			old_conf = list(
 				set(
-					(n for n in old_conf if n != role.id)
+					(n for n in old_conf if n != str(role.id))
 				)
 			)
 			
 		elif mode == "append":
 			# Add role to the config
-			old_conf.append(role.id)
+			old_conf.append(str(role.id))
 			
 			# Remove all duplicates
 			old_conf = list(
@@ -131,7 +131,7 @@ class PermissionBase:
 			)
 		
 		(
-			self.client.DataBaseManager.get_table("guilds")
+			self.client.data_base_manager.get_table("guilds")
 			.filter(
 				{
 					"guild": str(message.guild.id)
@@ -141,7 +141,7 @@ class PermissionBase:
 					perm: old_conf  # Update the value of the perm key
 					# to old_conf
 				}
-			).run(self.client.DataBaseManager.connection)
+			).run(self.client.data_base_manager.connection)
 		)
 		
 		await message.channel.send(
@@ -211,7 +211,7 @@ class RemovePerm(PermissionBase):
 		
 		
 def setup(client):
-	client.CommandHandler.add_commands(
+	client.command_handler.add_commands(
 		RemovePerm(client),
 		SetPerm(client)
 	)

@@ -638,3 +638,141 @@ class DataBaseManager:
 			)
 			.run(self.connection)
 		)
+
+	def add_custom_command(self, guild, name, description, body):
+		if not isinstance(guild, str):
+			guild = str(guild)
+		
+		(
+			self.get_table("customs")
+			.insert(
+				{
+					"guild": guild,
+					"name": name.lower(),
+					"description": description,
+					"body": body
+				}
+			)
+			.run(self.connection)
+		)
+
+	def get_customs(self, guild):
+		if not isinstance(guild, str):
+			guild = str(guild)
+			
+		return list(
+			self.get_table("customs")
+			.filter(
+				{
+					"guild": guild
+				}
+			)
+			.run(self.connection)
+		)
+	
+	def remove_custom(self, name, guild):
+		if not isinstance(guild, str):
+			guild = str(guild)
+		
+		(
+			self.get_table("customs")
+			.filter(
+				{
+					"name": name.lower(),
+					"guild": guild
+				}
+			)
+			.delete()
+			.run(self.connection)
+		)
+
+	def custom_command_exists(self, name, guild):
+		if not isinstance(guild, str):
+			guild = str(guild)
+		
+		return len(
+			list(
+				self.get_table("customs")
+				.filter(
+					{
+						"name": name.lower(),
+						"guild": guild
+					}
+				)
+				.run(self.connection)
+			)
+		) > 0
+
+	@staticmethod
+	def get(iterable, key):
+		for i in iterable:
+			if key(i):
+				return i
+		return None
+
+	def get_guild_currency(self, guild):
+		if not isinstance(guild, str):
+			guild = str(guild)
+
+		return list(
+			self.get_table("currency")
+			.filter(
+				{
+					"guild": guild
+				}
+			)
+			.run(self.connection)
+		)
+	
+	def get_currency(self, guild, member):
+		if not isinstance(guild, str):
+			guild = str(guild)
+			
+		if not isinstance(member, str):
+			member = str(member)
+			
+		guild_cur = self.get_guild_currency(guild)
+		
+		member_cur = self.get(
+			guild_cur,
+			lambda m: m["member"] == member
+		)
+		
+		if not guild_cur or not member_cur:
+			blank = {
+				"guild": guild,
+				"member": member,
+				"cur": 0,
+				"gamblingSuspended": False
+			}
+			
+			return (
+				self.get_table("currency")
+				.insert(
+					blank,
+					return_changes=True
+				)
+				.run(self.connection)
+			)["changes"][0]["new_val"]
+			
+		return member_cur
+
+	def update_member_cur(self, guild, member, new_amount):
+		old_value = self.get_currency(guild, member)
+		
+		(
+			self.get_table("currency")
+			.get(old_value["id"])
+			.update(
+				{
+					"cur": new_amount
+				}
+			)
+			.run(self.connection)
+		)
+		
+	def is_gambling_suspended(self, guild, member):
+		return (
+			self.get_currency(guild, member)
+			.get("gamblingSuspended", False)
+		)

@@ -193,7 +193,7 @@ class Bird:
 
 
 def setup(client):
-	client.CommandHandler.add_commands(
+	client.command_handler.add_commands(
 		Dog(client),
 		Fox(client),
 		Panda(client),

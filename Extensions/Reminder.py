@@ -18,7 +18,7 @@ class AddReminder:
 	async def run(self, _, message, *args):
 		if len(args) == 0:
 			# No args supplied
-			return await self.client.Errors.MissingArgs(
+			return await self.client.errors.MissingArgs(
 				"time argument"
 			).send(message.channel)
 		
@@ -28,19 +28,19 @@ class AddReminder:
 		
 		if not time:
 			# Time not found in message
-			return await self.client.Errors.MissingArgs(
+			return await self.client.errors.MissingArgs(
 				"time argument"
 			).send(message.channel)
 
 		# Insert reminder into reminders table
-		self.client.DataBaseManager.get_table("reminders").insert(
+		self.client.data_base_manager.get_table("reminders").insert(
 			{
 				"user": str(message.author.id),
 				"expiry": (epoch() * 1000) + time,
 				"message": msg,
 				"type": "dm"
 			}
-		).run(self.client.DataBaseManager.connection)
+		).run(self.client.data_base_manager.connection)
 		
 		# parse_to_string returns the date in human readable form
 		await message.channel.send(
@@ -49,6 +49,6 @@ class AddReminder:
 		
 
 def setup(client):
-	client.CommandHandler.add_commands(
+	client.command_handler.add_commands(
 		AddReminder(client)
 	)

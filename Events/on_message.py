@@ -1,4 +1,6 @@
 from random import randint
+from Utils.CustomCommand import CustomCommand
+from re import match, escape
 
 
 class MessageEvent:
@@ -17,35 +19,57 @@ class MessageEvent:
 			# Ignore DM's
 			return
 		
-		if await self.client.AutoMod.auto_mod_filter(message):
+		# Defining prefixes here also ensures a guild object will
+		# exist so the automod filters can run without error
+		prefixes = [
+			self.client.data_base_manager.get_prefix(
+				str(message.guild.id)
+			),
+			f"<@{self.client.user.id}>",
+			f"<@!{self.client.user.id}>",
+		]
+		
+		if await self.client.auto_mod.auto_mod_filter(message):
 			# AUTOMOD -> Check message content, if there was a match,
 			# end here
 			return
 		
-		if not self.client.DataBaseManager.in_xp_cooldown(
+		if not self.client.data_base_manager.in_xp_cooldown(
 				message.author.id, message.guild.id):
 			
 			# The user isn't in cooldown for xp, add xp
 			
-			self.client.DataBaseManager.add_xp(
+			self.client.data_base_manager.add_xp(
 				guild=message.guild.id,
 				member=message.author.id,
 				amount=randint(1, 5)
 			)
 			
 		prefix = self.find_prefix(
-			[
-				f"<@{self.client.user.id}>",
-				f"<@!{self.client.user.id}>",
-				self.client.DataBaseManager.get_prefix(message.guild.id)
-			],
+			prefixes,
 			message.content
 		)
 		# Attempts to find the prefix used in this message, allowing
 		# mentions as a prefix
 		
+		customs = self.client.data_base_manager.get_customs(
+			str(message.guild.id)
+		)
+		
+		custom = self.find_custom(message, customs)
+		
 		if not prefix:
-			# No prefix match, end here
+			# No prefix match, check for custom commands and then end
+			# here
+			if custom:
+				await custom.run(
+					message,
+					(
+						message.content[len(custom.name):]
+						.strip().split(" ")
+					)
+				)
+			
 			return
 		
 		# Remove the prefix from the message content and remove
@@ -54,23 +78,40 @@ class MessageEvent:
 		
 		if len(args) == 0:
 			# The message was just a prefix, there's no message
-			# remaining, end here
+			# remaining, check for a custom command then end here
+			
+			if custom:
+				await custom.run(
+					message,
+					(
+						message.content[len(custom.name):]
+						.strip().split(" ")
+					)
+				)
+			
 			return
 		
 		cmd = args.pop(0)
 		# The command name is the first argument (first word after the
 		# prefix)
 		
-		command = self.client.CommandHandler.get_command(cmd)
+		command = self.client.command_handler.get_command(cmd)
 		# Search for the command (case insensitive)
 
 		if not command:
-			# No command was found, end here
+			# No command was found, check for custom command then return
+			
+			if custom:
+				await custom.run(
+					message,
+					message.content[len(custom.name):].strip().split(" ")
+				)
+			
 			return
 		
 		command.prefix = prefix
 		
-		command.author_perm_level = self.client.CalculatePermissions(
+		command.author_perm_level = self.client.calculate_permissions(
 			self.client,
 			message.author,
 			message.guild
@@ -79,7 +120,7 @@ class MessageEvent:
 		if command.author_perm_level < command.perm_level:
 			# The user doesn't have permission to use this command,
 			# send an error message and return
-			return await self.client.Errors.MissingPermissions().send(
+			return await self.client.errors.MissingPermissions().send(
 				message.channel
 			)
 		
@@ -101,6 +142,21 @@ class MessageEvent:
 			if msg.startswith(prefix):
 				return prefix
 	
+	@staticmethod
+	def cc_regex(name):
+		return fr"(?i)^{escape(name)}($|\s)"
+	
+	def find_custom(self, message, customs):
+		for c in customs:
+			if match(self.cc_regex(c["name"]), message.content):
+				return CustomCommand.load(
+					c["body"],
+					self.client,
+					c["name"],
+					c["description"]
+				)
+		return None
+
 
 def setup(client):
 	MessageEvent(client)

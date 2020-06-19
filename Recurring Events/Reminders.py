@@ -12,10 +12,10 @@ class Reminders:
 		# Retrieve all reminders where the time to send them is
 		# either equal to or less than the current time
 		reminders = list(
-			self.client.DataBaseManager
+			self.client.data_base_manager
 			.get_table("reminders")
 			.filter(lambda r: r["expiry"] <= current_time)
-			.run(self.client.DataBaseManager.connection)
+			.run(self.client.data_base_manager.connection)
 		)
 
 		for reminder in reminders:
@@ -26,11 +26,11 @@ class Reminders:
 				# If somehow the user doesn't exist, delete the
 				# reminder then continue to the next reminder
 				(
-					self.client.DataBaseManager
+					self.client.data_base_manager
 					.get_table("reminders")
 					.get(reminder["id"])
 					.delete()
-					.run(self.client.DataBaseManager.connection)
+					.run(self.client.data_base_manager.connection)
 				)
 				continue
 			
@@ -49,11 +49,11 @@ class Reminders:
 			
 			# Delete the reminder from the db
 			(
-				self.client.DataBaseManager
+				self.client.data_base_manager
 				.get_table("reminders")
 				.get(reminder["id"])
 				.delete()
-				.run(self.client.DataBaseManager.connection)
+				.run(self.client.data_base_manager.connection)
 			)
 
 

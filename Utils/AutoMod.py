@@ -1,6 +1,9 @@
 from re import match
 from time import time as epoch
 
+from discord import Embed, Colour
+from discord.errors import NotFound, HTTPException, Forbidden
+
 
 def highest_role(roles):
 	# Returns a members highest role
@@ -32,7 +35,7 @@ def permission_check(permission):
 				# no permissions should stop it from happening
 				# successfully
 				return f(*args, **kwargs)
-			return False
+			return False, False
 		return inner
 	
 	return outer_inner
@@ -42,20 +45,20 @@ class AutoModHandler:
 	def __init__(self, client):
 		self.client = client
 		
-		self.db = self.client.DataBaseManager
+		self.db = self.client.data_base_manager
 		
 		self.filter_actions = {
 			"ban": self.ban_user,
 			"kick": self.kick_user,
 			"softban": self.softban_user,
 			"strike": self.strike_user,
-			"delete": lambda *_: True
+			"delete": self.delete_msg
 		}
 		
 	def gen_perms(self, msg):
 		# Checks the permissions (using bots internal permission
 		# system) for the message author, allows staff to be bypassed
-		return self.client.CalculatePermissions(
+		return self.client.calculate_permissions(
 			self.client,
 			msg.author,
 			msg.guild
@@ -88,10 +91,15 @@ class AutoModHandler:
 				# Unknown action, how did this happen?
 				continue
 			
-			if message.guild.me.permissions.manage_messages:
+			if message.guild.me.guild_permissions.manage_messages:
 				# If the bot has perms to delete the message, do so
-				await message.delete()
-
+				try:
+					await message.delete()
+					
+				except NotFound:
+					# Message already deleted
+					pass
+				
 			successful_punish, create_db = await self.filter_actions[
 				f["action"]
 			](
@@ -110,10 +118,33 @@ class AutoModHandler:
 					time=epoch(),
 					staff=str(self.client.user.id)
 				)
+			
+				try:
+					channel = message.author.dm_channel
+					
+					if not channel:
+						channel = await message.author.create_dm()
+					
+					await channel.send(
+						embed=Embed(
+							type="rich",
+							colour=Colour.from_rgb(238, 144, 101),
+							title=
+							f"Punishment updated in "
+							f"{message.guild.name}",
+							description=(
+								f"Punishment type: "
+								f"`{f['action'].title()}`\n"
+								f"Reason: {f['reason']}"
+							)
+						)
+					)
+				except (HTTPException, Forbidden):
+					pass
+				
 				return True
 			
-			if successful_punish:
-				return True
+			return successful_punish
 			
 	async def image_filter(self, original, member):
 		banned = self.db.get_img_filters(member.guild.id)
@@ -133,8 +164,6 @@ class AutoModHandler:
 			avatar=original,
 			banned=banned_reduced
 		)
-	
-		print(res)
 		
 		# Error connecting to API, forced to assume no match
 		if res == -1:
@@ -171,10 +200,32 @@ class AutoModHandler:
 				time=epoch(),
 				staff=str(self.client.user.id)
 			)
+			
+			try:
+				channel = member.dm_channel
+				
+				if not channel:
+					channel = await member.create_dm()
+				
+				await channel.send(
+					embed=Embed(
+						type="rich",
+						colour=Colour.from_rgb(238, 144, 101),
+						title=
+						f"Punishment updated in {member.guild.name}",
+						description=(
+							f"Punishment type: "
+							f"`{matched['action'].title()}`\n"
+							f"Reason: {matched['reason']}"
+						)
+					)
+				)
+			except (HTTPException, Forbidden):
+				pass
+			
 			return True
 		
-		if success:
-			return True
+		return success
 			
 	@permission_check("ban_members")
 	async def ban_user(self, member, reason):

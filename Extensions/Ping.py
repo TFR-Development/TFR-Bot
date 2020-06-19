@@ -19,4 +19,4 @@ class Ping:
 		
 
 def setup(client):
-	client.CommandHandler.add_command(Ping(client))
+	client.command_handler.add_command(Ping(client))

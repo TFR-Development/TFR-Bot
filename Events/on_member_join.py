@@ -11,15 +11,18 @@ class MemberJoin:
 	
 	async def on_member_join(self, member):
 		try:
-			av = await member.avatar_url_as(format="png", size=1024).read()
+			av = await member.avatar_url_as(
+				format="png",
+				size=1024
+			).read()
 
 			# Run image AutoMod against new users avatar
-			await self.client.AutoMod.image_filter(
+			await self.client.auto_mod.image_filter(
 				b64encode(av).decode(),
 				member
 			)
 
-		except (DiscordException, HTTPException, NotFound) as e:
+		except (DiscordException, HTTPException, NotFound):
 			# Exceptions from fetching users avatar, fail silently
 			pass
 
@@ -28,8 +31,8 @@ class MemberJoin:
 		if not join_logs:
 			return
 		
-		# Send a message to the join logs channel with the users avatar (enlarged)
-		# The link to the users avatar
+		# Send a message to the join logs channel with the users
+		# (enlarged). The link to the users avatar
 		# And a link to a reverse image search result
 		await join_logs.send(
 			embed=Embed(
@@ -43,10 +46,10 @@ class MemberJoin:
 					"image_url=" +
 					str(member.avatar_url).replace(':', '%3A').replace(
 						'/', '%2F'
-					) + ")",
+					) + ")"
 				)
 			).set_image(
-				url=member.avatar_url
+				url=str(member.avatar_url)
 			)
 		)
 
