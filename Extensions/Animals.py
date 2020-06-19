@@ -75,7 +75,6 @@ class Dog:
 		
 		await message.channel.send(
 			embed=Embed(
-				title="Dog! 🐶",
 				type="rich",
 				colour=Colour.from_rgb(180, 111, 255)
 			).set_image(
@@ -99,7 +98,6 @@ class Fox:
 	async def run(_, message, *__):
 		await message.channel.send(
 			embed=Embed(
-				title="Fox! 🦊",
 				type="rich",
 				colour=Colour.from_rgb(180, 111, 255)
 			).set_image(
@@ -130,7 +128,6 @@ class Panda:
 	async def run(_, message, *__):
 		await message.channel.send(
 			embed=Embed(
-				title="Panda! 🐼",
 				type="rich",
 				colour=Colour.from_rgb(180, 111, 255)
 			).set_image(
@@ -182,7 +179,6 @@ class Bird:
 	async def run(self, _, message, *__):
 		await message.channel.send(
 			embed=Embed(
-				title="Bird! 🐦",
 				type="rich",
 				colour=Colour.from_rgb(180, 111, 255)
 			).set_image(
