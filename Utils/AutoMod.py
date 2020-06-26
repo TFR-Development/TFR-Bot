@@ -135,6 +135,7 @@ class AutoModHandler:
 							description=(
 								f"Punishment type: "
 								f"`{f['action'].title()}`\n"
+								f"Filtered word(s): `{res.group()}`\n"
 								f"Reason: {f['reason']}"
 							)
 						)
@@ -212,7 +213,8 @@ class AutoModHandler:
 						type="rich",
 						colour=Colour.from_rgb(238, 144, 101),
 						title=
-						f"Punishment updated in {member.guild.name}",
+						f"Punishment updated in {member.guild.name} "
+						f"[Avatar Filter]",
 						description=(
 							f"Punishment type: "
 							f"`{matched['action'].title()}`\n"

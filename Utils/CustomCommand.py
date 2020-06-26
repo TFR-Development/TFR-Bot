@@ -12,7 +12,8 @@ class CustomCommand:
 	whitelist_regex = compile(r"(?i)^\(whitelist ([.+$\d ,]+)\)$")
 	channel_regex = compile(r"(?i)^\(channel ([.+$\d a-z]+)\)$")
 	dm_regex = compile(
-		r"(?i)^\(dm (<?@?!?\d{17,19}>?|.{1,32}#\d{4}|\$\d+)\)$"
+		r"(?i)^\(dm (<?@?!?\d{17,19}>?|.{1,32}#\d{4}|"
+		r"(\$\d+\+|\$\d+\.{2}\d+|\$\d+))\)$"
 	)
 	# RegEx's used for determining what each line should do
 
@@ -471,6 +472,11 @@ class CustomCommand:
 					)
 				)
 			),
+			content
+		)
+
+		content = self.everyone_regex.sub(
+			lambda m: f"@\u200b{m.group(1)}",
 			content
 		)
 		
