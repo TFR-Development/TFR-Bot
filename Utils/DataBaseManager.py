@@ -776,3 +776,18 @@ class DataBaseManager:
 			self.get_currency(guild, member)
 			.get("gamblingSuspended", False)
 		)
+
+	def get_shop_items(self, guild, item_type):
+		if not isinstance(guild, str):
+			guild = str(guild)
+			
+		return list(
+			self.get_table("shop")
+			.filter(
+				{
+					"guild": guild,
+					"type": item_type.lower()
+				}
+			)
+			.run(self.connection)
+		)

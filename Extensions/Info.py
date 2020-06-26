@@ -1,9 +1,17 @@
 from discord import Embed, Colour, Member
 from functools import reduce
+from datetime import datetime
 
 
 class BotInfo:
+    
+    day = 60 * 60 * 24
+    hour = 60 * 60
+    minute = 60
+    
     def __init__(self, client):
+        self.start = datetime.now()
+        
         self.client = client
 
         self.name = "botinfo"
@@ -43,7 +51,7 @@ class BotInfo:
                     name="Admin(s)",
                     value=self.get_admins(
                         self.client.config.bot_admins
-                    ),
+                    ) or "None",
                     inline=True
                 ).add_field(
                     name="Guilds",
@@ -55,11 +63,12 @@ class BotInfo:
                           "TFR-Bot)\n[API](https://github.com/"
                           "TFR-Development/TFR-API)",
                     inline=True
+                ).add_field(
+                    name="Uptime",
+                    value=self.uptime(),
+                    inline=True
                 ).set_thumbnail(
-                    url=self.gen_icon(
-                        self.client.user.id,
-                        self.client.user.avatar
-                    )
+                    url=self.client.user.avatar_url_as(size=1024)
                 )
             )
         )
@@ -72,12 +81,23 @@ class BotInfo:
             admins += "<@{}>\n".format(admin_id)
         return admins
 
-    @staticmethod
-    def gen_icon(user_id, icon):
-        # Formats the bots icon from the user_id and icon
-        return f"https://cdn.discordapp.com/avatars/{user_id}/" \
-               f"{icon}.png?size=1024"
-
+    def uptime(self):
+        total_seconds = (datetime.now() - self.start).total_seconds()
+        days = total_seconds // self.day
+        total_seconds %= self.day
+        hours = total_seconds // self.hour
+        total_seconds %= self.hour
+        minutes = total_seconds // self.minute
+        total_seconds %= self.minute
+        seconds = round(total_seconds)
+        
+        return "{} days, {} hours, {} minutes and {} seconds".format(
+            int(days),
+            int(hours),
+            int(minutes),
+            seconds
+        )
+        
 
 class ServerInfo:
     def __init__(self, client):

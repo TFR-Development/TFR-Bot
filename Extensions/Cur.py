@@ -90,7 +90,7 @@ class CurCommand(CurrencyCommand):
 			embed=Embed(
 				type="rich",
 				colour=Colour.from_rgb(180, 111, 255),
-				description="{} has {} {}".format(
+				description="{} has {} {}s".format(
 					f"{user.name}#{user.discriminator}",
 					user.cur,
 					self.client.config.currency_name

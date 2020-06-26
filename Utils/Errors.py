@@ -18,7 +18,7 @@ class MissingArgs(ErrorBase):
 			Embed(
 				type="rich",
 				colour=Colour.from_rgb(255, 70, 73),
-				title="Missing Arguments",
+				title="Missing Argument",
 				description=(
 					f"Missing `{arg_name.replace('`', '')}` "
 					f"from your command!"
@@ -62,8 +62,11 @@ class MissingFile(ErrorBase):
 				type="rich",
 				colour=Colour.from_rgb(255, 70, 73),
 				title="Missing File",
-				description=
-				f"Expected {file_type} to be attached to the message"
+				description=(
+					f"Expected {file_type} to be attached to"
+					f" the message"
+				)
+
 			)
 		)
 
@@ -87,9 +90,10 @@ class NoAPIConnection(ErrorBase):
 				type="rich",
 				colour=Colour.from_rgb(255, 70, 73),
 				title="No API Connection",
-				description=
-				"Unable to connect to the API, please contact a Bot"
-				" Owner or Bot Admin"
+				description=(
+					"Unable to connect to the API, please contact a Bot"
+					" Owner or Bot Admin"
+				)
 			)
 		)
 
@@ -101,9 +105,10 @@ class APIError(ErrorBase):
 				type="rich",
 				colour=Colour.from_rgb(255, 70, 73),
 				title="API Error",
-				description=
-				"Error from API request, please contact a "
-				"Bot Admin / Owner"
+				description=(
+					"Error from API request, please contact a "
+					"Bot Admin / Owner"
+				)
 			)
 		)
 
@@ -216,8 +221,10 @@ class FileReadError(ErrorBase):
 				type="rich",
 				colour=Colour.from_rgb(255, 70, 73),
 				title="Error",
-				description=
-				"There was an error when attempting to open the image"
+				description=(
+					"There was an error when attempting to "
+					"open the image"
+				)
 			)
 		)
 
@@ -273,7 +280,7 @@ class CustomCommandError(ErrorBase):
 		)
 
 
-class MissingCustom(ErrorBase):
+class MissingCommand(ErrorBase):
 	def __init__(self, err):
 		super().__init__(
 			Embed(
@@ -319,5 +326,32 @@ class InvalidUser(ErrorBase):
 				colour=Colour.from_rgb(255, 70, 73),
 				title="User not found",
 				description=f"Could not find user {u}"
+			)
+		)
+
+
+class MissingCurrency(ErrorBase):
+	def __init__(self, amount):
+		super().__init__(
+			Embed(
+				type="rich",
+				colour=Colour.from_rgb(255, 70, 73),
+				title="Missing currency",
+				description=(
+					f"You don't have enough currency for that, "
+					f"you only have {amount}"
+				)
+			)
+		)
+		
+
+class NoShopItems(ErrorBase):
+	def __init__(self, guild):
+		super().__init__(
+			Embed(
+				type="rich",
+				colour=Colour.from_rgb(255, 70, 73),
+				title="Shop not setup",
+				description=f"{guild} has not items in the shop"
 			)
 		)
