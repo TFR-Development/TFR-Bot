@@ -118,6 +118,8 @@ class CCHelp:
 				"consequent messages, can be used multiple times",
 				"`(dm <id>)` - Sets the response channel for "
 				"consequent messages to the given users DM's",
+				"`(permission <int>)` - The permission level required "
+				"to use the command",
 				"`(tfr!<cmd> [args])` - Runs the command `cmd` with "
 				"the given args",
 				"`(whitelist <id> [id... ])` - The same as blacklist "

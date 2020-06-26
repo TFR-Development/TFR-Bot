@@ -34,7 +34,7 @@ class TimelyCommand(CurrencyCommand):
 		
 	def gen_description(self, msg):
 		return (
-			"You've claimed your {} {}'s, you can claim again in {}"
+			"You've claimed your {} {}s, you can claim again in {}"
 			.format(
 				self.timely_amount,
 				self.client.config.currency_name,

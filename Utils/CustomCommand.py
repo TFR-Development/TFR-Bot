@@ -12,7 +12,8 @@ class CustomCommand:
 	whitelist_regex = compile(r"(?i)^\(whitelist ([.+$\d ,]+)\)$")
 	channel_regex = compile(r"(?i)^\(channel ([.+$\d a-z]+)\)$")
 	dm_regex = compile(
-		r"(?i)^\(dm (<?@?!?\d{17,19}>?|.{1,32}#\d{4}|\$\d+)\)$"
+		r"(?i)^\(dm (<?@?!?\d{17,19}>?|.{1,32}#\d{4}|"
+		r"(\$\d+\+|\$\d+\.{2}\d+|\$\d+))\)$"
 	)
 	# RegEx's used for determining what each line should do
 
@@ -338,7 +339,7 @@ class CustomCommand:
 				# User blacklist
 				return
 
-			for r in message.member.roles:
+			for r in message.author.roles:
 				# Role blacklist
 				if str(r.id) == b or r.name == b:
 					return
@@ -364,7 +365,7 @@ class CustomCommand:
 					# If the user authorised, end checks here
 					break
 					
-				for r in message.member.roles:
+				for r in message.author.roles:
 					# Check all of the users roles (name and id)
 					authorised = r.name == w or r.id == w
 					if authorised:
@@ -463,11 +464,6 @@ class CustomCommand:
 			pass
 
 	def clean(self, content, message):
-		content = self.everyone_regex.sub(
-			lambda m: f"@\u200b{m.group(1)}",
-			content
-		)
-		
 		content = self.role_mention_regex.sub(
 			lambda m: (
 				(lambda r: f"@{r.name}" if r else m.group(0))(
@@ -476,6 +472,11 @@ class CustomCommand:
 					)
 				)
 			),
+			content
+		)
+
+		content = self.everyone_regex.sub(
+			lambda m: f"@\u200b{m.group(1)}",
 			content
 		)
 		

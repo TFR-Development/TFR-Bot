@@ -48,7 +48,14 @@ class CurrencyGuild:
 			CurrencyMember(self.client, m) for m in self._guild.members
 		]
 
-
+	@property
+	def shop_roles(self):
+		return self.client.data_base_manager.get_shop_items(
+			str(self._guild.id),
+			"role"
+		)
+	
+	
 class CurrencyMember:
 	def __init__(self, client, member):
 		self.client = client
@@ -96,6 +103,9 @@ class CurrencyMember:
 			str(self._guild.id),
 			str(self.id)
 		)
+
+	def can_gamble(self, amount):
+		return 0 <= amount <= self.cur
 
 
 class CurrencyMessage:

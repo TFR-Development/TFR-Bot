@@ -1,6 +1,6 @@
 from discord import Embed, Colour
 from asyncio import TimeoutError as AsyncioTimeoutError
-from Utils.CustomCommand import CustomCommand
+from math import ceil
 
 
 class Help:
@@ -104,7 +104,10 @@ class Help:
 		sorted_keys = sorted(categories.keys())
 		# Sort the categories into alphabetical order
 		for key in sorted_keys:
-			sorted_categories[key] = categories[key]
+			sorted_categories[key] = sorted(
+				categories[key],
+				key=lambda c: c.name
+			)
 		
 		categories = sorted_categories
 
@@ -112,23 +115,29 @@ class Help:
 		
 		for cat in categories:
 			# Create the individual menu pages
-			menu_pages.append(
-				{
-					"name": cat,
-					"value": "\n".join(
-						[
-							"**{0}{1}**\n{2}\n".format(
-								command.prefix,
-								getattr(c, "usage", c.name),
-								c.description
-							) for c in sorted(
-								categories[cat],
-								key=lambda n: n.name
-							)
-						]
-					)
-				}
-			)
+			for split in range(ceil(len(categories[cat]) / 5)):
+				name = "{} [{}/{}]".format(
+					cat,
+					split + 1,
+					ceil(len(categories[cat]) / 5)
+				)
+				
+				menu_pages.append(
+					{
+						"name": name,
+						"value": "\n".join(
+							[
+								"**{0}{1}**\n{2}\n".format(
+									command.prefix,
+									getattr(c, "usage", c.name),
+									c.description
+								) for c in categories[cat][
+									split * 5:(split + 1) * 5
+								]
+							]
+						)
+					}
+				)
 			
 		help_embed = Embed(
 			type="rich",

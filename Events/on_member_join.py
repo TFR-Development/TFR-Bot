@@ -26,7 +26,7 @@ class MemberJoin:
 			# Exceptions from fetching users avatar, fail silently
 			pass
 
-		join_logs = self.client.get_channel(577905211922841601)
+		join_logs = member.guild.get_channel(577905211922841601)
 		
 		if not join_logs:
 			return

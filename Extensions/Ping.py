@@ -9,7 +9,7 @@ class Ping:
 		self.description = "Pings and pongs, gives some latency info"
 		self.category = "Miscellaneous"
 		
-	async def run(self, cmd, message, *args):
+	async def run(self, _, message, *__):
 		await message.channel.send(
 			f"""Pong! :ping_pong:\nLatency {round(
 				self.client.latency * 1000,
