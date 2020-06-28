@@ -14,7 +14,8 @@ class Betflip(CurrencyCommand):
 		r"(?i)^([ht])(ead|ail)?s?$"
 	)
 	
-	multiplier = 1.95
+	# This is added so its the same as multiplying by 1.95
+	multiplier = 0.95
 
 	cooldown = 2
 	
@@ -76,9 +77,9 @@ class Betflip(CurrencyCommand):
 				message.author.cur
 			).send(message.channel)
 		
-		seed(urandom(64))
+		seed(urandom(1024))
 		
-		true_outcome = "h" if randint(1, 100) >= 50 else "t"
+		true_outcome = "h" if randint(1, 1000) >= 500 else "t"
 		
 		if outcome == true_outcome:
 			win_total = ceil(amount * self.multiplier)
