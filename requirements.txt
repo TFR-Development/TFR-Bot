@@ -10,4 +10,4 @@ rethinkdb==2.4.7
 six==1.15.0
 websockets==8.1
 yarl==1.4.2
-geopy==1.22.0
+geopy==2.0.0
