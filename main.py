@@ -2,8 +2,7 @@ from importlib import import_module
 from json import load
 from os import listdir
 
-from discord import Client, Activity
-from traceback import format_exc
+from discord import Client, Activity, Intents
 
 import Utils.Errors as Errors
 from Utils.APIBridge import APIBridge
@@ -21,11 +20,18 @@ from Utils.CoolDownManager import CoolDownManager
 with open("config.json") as config_file:
 	config = JSONReader(load(config_file))
 
+intents = Intents.none()
+intents.guilds = True
+intents.members = True
+intents.guild_messages = True
+intents.guild_reactions = True
+
 client = Client(
 	status="online",
 	activity=Activity(
 		name="Being Developed"
-	)
+	),
+	intents=intents,
 )
 
 client.command_handler = CommandHandler()
