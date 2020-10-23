@@ -163,8 +163,8 @@ class RemoveCommand:
 		
 		self.name = "removecommand"
 		self.aliases = [
-			"rmcommand"
-			"removecc"
+			"rmcommand",
+			"removecc",
 			"rmcc"
 		]
 		self.perm_level = 4
