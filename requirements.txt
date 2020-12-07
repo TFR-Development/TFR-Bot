@@ -6,7 +6,7 @@ discord.py==1.5.1
 idna==2.10
 multidict==5.0.0
 Pillow==8.0.1
-rethinkdb==2.4.7
+rethinkdb==2.4.8
 six==1.15.0
 websockets==8.1
 yarl==1.6.2
